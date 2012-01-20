@@ -16,7 +16,7 @@ public class Client {
     private OutputStream out;
     private Grille grille;
 
-    public static void main(String[] args) throws Exception {
+    public void main(String[] args) throws Exception {
 
         // Création d'une instance d'un client
         Client client = new Client();
