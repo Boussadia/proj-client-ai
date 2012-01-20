@@ -39,15 +39,35 @@ public class Client {
             }
             
             try{
-                tempPort = Integer.parseInt(args[1]);
+                tempPort = Integer.parseInt(args[indexPort+1]);
             }catch(Exception e){
-                System.out.println("Le port indiqué : "+args[1]+" n'est pas valide!");
+                System.out.println("Le port indiqué : "+args[indexPort+1]+" n'est pas valide!");
                 return;
             }
             port = tempPort;
             
             //On cherche l'adresse du serveur : -h
+            String tempHost = "";
+            int indexHost = 0;
+            
+            if(args[0].equals("-h")){
+                indexHost = 0;
+            }else if(args[0].equals("-h")){
+                indexHost = 2;
+            }else{
+                System.out.println("Il faut renseigner un host!");
+                System.out.println("Exemple : -h 192.168.0.2");
+                return;
+            }
+            
+            try{
+                tempHost = args[indexHost+1];
+            }catch(Exception e){
+                System.out.println("Le host indiqué : "+args[indexHost+1]+" n'est pas valide!");
+                return;
+            }
         }
+        
 
         // Création d'une instance d'un client
         Client client = new Client();
