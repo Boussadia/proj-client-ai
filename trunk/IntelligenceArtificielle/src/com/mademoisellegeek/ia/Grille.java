@@ -16,7 +16,6 @@ public class Grille {
         this.humains = new int[nbLignes][nbColonnes];
         this.vampires = new int[nbLignes][nbColonnes];
         this.loups = new int[nbLignes][nbColonnes];
-        //TODO remplir les tableaux de zéro
     }
 
     void setCaseDepart(int xDepart, int yDepart) {
@@ -29,7 +28,9 @@ public class Grille {
     }
 
     void vider() {
-        //tODO mettre humains, vampires et loups à zéro
+        this.humains = new int[lignes][colonnes];
+        this.vampires = new int[lignes][colonnes];
+        this.loups = new int[lignes][colonnes];
     }
 
     void update(int xCase, int yCase, int nbHumains, int nbVampires, int nbLoupsGarous) {
