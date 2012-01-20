@@ -53,9 +53,33 @@ public class Client {
     
         // Méthode qui permet de recevoir une trame (Turn dans le cas nominal)
     void receiveTrame() throws Exception {
-        //TODO
-        in.read(trame, 0, 3);
-
+        int nbBytesLus = in.read(trame, 0, 3);
+        if (nbBytesLus != 3)
+            throw new Exception("BIG FUCKING PROBLEM");
+        
+        String typeTrame = new String(trame, "Cp1252");
+        
+        if (typeTrame.equalsIgnoreCase("SET")) {
+            
+        }
+        else if (typeTrame.equalsIgnoreCase("HUM")) {
+            
+        }
+        else if (typeTrame.equalsIgnoreCase("HME")) {
+            
+        }
+        else if (typeTrame.equalsIgnoreCase("UPD")) {
+            
+        }
+        else if (typeTrame.equalsIgnoreCase("END")) {
+            
+        }
+        else if (typeTrame.equalsIgnoreCase("BYE")) {
+            
+        }
+        else {
+            throw new Exception ("BIG MOTHER FUCKING PROBLEM");
+        }
         /*switch (trame[1]) {
             case 0x44: {
                 this.joueurs.setMessage("Vous avez perdu la partie :(");
@@ -112,7 +136,7 @@ public class Client {
     //Méthode qui indique les maisons dans la grille
     void receiveHum() {
         //1 octet N
-        //N*3 octets x,y,n(avec n le nb d'habitants de la maison)
+        //N*2 octets x,y,n(avec n le nb d'habitants de la maison)
     }
         
     //Méthode qui indique la case de départ
