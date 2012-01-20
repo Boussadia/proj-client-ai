@@ -154,8 +154,10 @@ public class Client {
     }
     
     //Méthode qui déplace des individus d'une case à l'autre
-    void sendMov() {
+    void sendMov(int xDepart, int yDepart, int nbIndividus, int xArrivee, int yArrivee) {
         //TODO
+        trame[0] = 'm';
+        //3 octets MOV, 2 octets départ, 1 octet nb d'invididus, 2 octets coordonnées arrivées
     }
     
     //Méthode qui attaque une case
