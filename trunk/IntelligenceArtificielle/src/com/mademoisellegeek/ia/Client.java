@@ -91,7 +91,7 @@ public class Client {
             nbBytesLus = in.read(trame, 0, 5*N);
             if (nbBytesLus != 5*N)
                 throw new Exception("Erreur de lecture des données de la trame UPD");
-            receiveUpd(trame);
+            receiveUpd(N, trame);
         }
         else if (typeTrame.equalsIgnoreCase("END")) {
             receiveEnd();
@@ -124,18 +124,26 @@ public class Client {
     //Méthode qui indique la case de départ
     void receiveHme(byte[] bytes) {
         int xDepart = (int)trame[0] & 0xff;
-        int xArrivee = (int)trame[1] & 0xff;
-        grille.setCaseDepart(xDepart, xArrivee);
+        int yDepart = (int)trame[1] & 0xff;
+        grille.setCaseDepart(xDepart, yDepart);
     }
 
     //Méthode qui indique les modifications à apporter à la grille
-    void receiveUpd(byte[] bytes) {
-        //TODO
+    void receiveUpd(int nbUpdates, byte[] bytes) {
+        for (int i=0; i<nbUpdates; i++) {
+            int xCase = (int)trame[5*i] & 0xff;
+            int yCase = (int)trame[5*i+1] & 0xff;
+            int nbHumains = (int)trame[5*i+2] & 0xff;
+            int nbVampires = (int)trame[5*i+3] & 0xff;
+            int nbLoupsGarous = (int)trame[5*i+4] & 0xff;
+            grille.update(xCase, yCase, nbHumains, nbVampires, nbLoupsGarous);
+        }
     }
     
     //Méthode qui indique que la partie est terminée
     void receiveEnd() {
-        //TODO
+        //nettoyer la grille
+        grille.vider();
     }
     
     //Méthode qui indique le nom du jouer
