@@ -6,15 +6,14 @@ import java.net.Socket;
 
 public class Client {
 
-    private static final long serialVersionUID = 1L;
+    //TODO à mettre dans un fichier config
     private static final String host = "127.0.0.1";
     private static final int port = 5555;
+    
     private Socket socket;
     private byte[] trame;
     private InputStream in;
     private OutputStream out;
-    private boolean isFin = false;
-    private boolean isOK = false;
 
     public static void main(String[] args) throws Exception {
 
@@ -22,10 +21,10 @@ public class Client {
         Client client = new Client();
 
         // On boucle à l'infini jusqu'à la fin de la partie 
-
         while (true) {
             client.receiveTrame();
             if (false) {
+                //quand la trame de fin de partie est reçue
                 break;
             }
         }
