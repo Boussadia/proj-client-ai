@@ -7,7 +7,7 @@ import java.net.Socket;
 public class Client {
 
     //TODO à mettre dans un fichier config
-    private static String host = "127.0.0.1";
+    private static String host = "10.0.0.9";
     private static int port = 5555;
     
     private Socket socket;
@@ -16,7 +16,7 @@ public class Client {
     private OutputStream out;
     private Grille grille;
 
-    public void main(String[] args) throws Exception {
+    public static void main(String[] args) throws Exception {
         
         //Lecture des arguments pour avoir le port et l'adresse du serveur
         if(args.length !=4){
@@ -77,52 +77,63 @@ public class Client {
             return;
         }
         System.out.println("Connexion établie avec le serveur.\n");
-
+        
+        trame = new byte[9999];
+        sendNme();
         // Définition de la trame
         //TODO ce 9999 est juste moche
-        trame = new byte[9999];
     }
     
     // Méthode qui permet de recevoir une trame (Turn dans le cas nominal)
     boolean receiveTrame() throws Exception {
+        System.out.println("WOOO");
+        trame = new byte[3];
         int nbBytesLus = in.read(trame, 0, 3);
         if (nbBytesLus != 3)
             throw new Exception("Erreur de lecture de l'entête de trame");
-        
-        //todo ASCII
+
         String typeTrame = new String(trame, "ASCII");
-        
+        System.out.println("on a reçu une trame de type" + typeTrame);
         if (typeTrame.equalsIgnoreCase("SET")) {
+            trame = new byte[2];
             nbBytesLus = in.read(trame, 0, 2);
             if (nbBytesLus != 2)
                 throw new Exception("Erreur de lecture de la trame SET");
             receiveSet(trame);
         }
         else if (typeTrame.equalsIgnoreCase("HUM")) {
+            trame = new byte[1];
             nbBytesLus = in.read(trame, 0, 1);
             if (nbBytesLus != 1)
                 throw new Exception("Erreur de lecture de N de la trame HUM");
             int N = (int)trame[0] & 0xff;
+            trame = new byte[2*N];
             nbBytesLus = in.read(trame, 0, 2*N);
             if (nbBytesLus != 2*N)
                 throw new Exception("Erreur de lecture des données de la trame HUM");
             receiveHum(N, trame);
         }
         else if (typeTrame.equalsIgnoreCase("HME")) {
+            trame = new byte[2];
             nbBytesLus = in.read(trame, 0, 2);
             if (nbBytesLus != 2)
                 throw new Exception("Erreur de lecture de la trame HME");
             receiveHme(trame);
         }
         else if (typeTrame.equalsIgnoreCase("UPD")) {
+            trame = new byte[1];
             nbBytesLus = in.read(trame, 0, 1);
             if (nbBytesLus != 1)
                 throw new Exception("Erreur de lecture de N de la trame UPD");
             int N = (int)trame[0] & 0xff;
+            trame = new byte[5*N];
             nbBytesLus = in.read(trame, 0, 5*N);
             if (nbBytesLus != 5*N)
                 throw new Exception("Erreur de lecture des données de la trame UPD");
             receiveUpd(N, trame);
+            System.out.println("debut mouvement");
+            sendMov(4, 5, 2, 4, 4);
+            System.out.println("on a envoyé le mouvement");
         }
         else if (typeTrame.equalsIgnoreCase("END")) {
             receiveEnd();
@@ -140,6 +151,7 @@ public class Client {
     void receiveSet(byte[] bytes) {
         int nbLignes = (int)trame[0] & 0xff;
         int nbColonnes = (int)trame[1] & 0xff;
+        System.out.println("SET" + nbLignes +"lignes" + nbColonnes + "colonnes");
         grille = new Grille(nbLignes, nbColonnes);
     }
         
@@ -148,6 +160,7 @@ public class Client {
         for (int i=0; i<nbMaisons; i++) {
             int xHumain = (int)bytes[2*i] & 0xff;
             int yHumain = (int)bytes[2*i+1] & 0xff;
+            System.out.println("HUM" + xHumain + "   " + yHumain);
             grille.ajouterHumain(xHumain, yHumain);
         }
     }
@@ -156,6 +169,7 @@ public class Client {
     void receiveHme(byte[] bytes) {
         int xDepart = (int)trame[0] & 0xff;
         int yDepart = (int)trame[1] & 0xff;
+        System.out.println("HOME" + xDepart + "   " + yDepart);
         grille.setCaseDepart(xDepart, yDepart);
     }
 
@@ -167,6 +181,7 @@ public class Client {
             int nbHumains = (int)trame[5*i+2] & 0xff;
             int nbVampires = (int)trame[5*i+3] & 0xff;
             int nbLoupsGarous = (int)trame[5*i+4] & 0xff;
+            System.out.println("UPDATE" + xCase + " " + yCase + " " + nbHumains + " " + nbVampires + "   " + nbLoupsGarous);
             grille.update(xCase, yCase, nbHumains, nbVampires, nbLoupsGarous);
         }
     }
@@ -180,10 +195,11 @@ public class Client {
     //Méthode qui indique le nom du jouer
     void sendNme() {
         //TODO choisir un meilleur nom d'équipe
+        trame = new byte[8];
         trame[0] = 'N';
         trame[1] = 'M';
         trame[2] = 'E';
-        trame[3] = 'T';
+        trame[3] = (byte)4;
         trame[4] = 'A';
         trame[5] = 'N';
         trame[6] = 'O';
@@ -199,6 +215,7 @@ public class Client {
     
     //Méthode qui déplace des individus d'une case à l'autre
     void sendMov(int xDepart, int yDepart, int nbIndividus, int xArrivee, int yArrivee) {
+        trame = new byte[8];
         trame[0] = 'M';
         trame[1] = 'O';
         trame[2] = 'V';
@@ -218,6 +235,7 @@ public class Client {
     
     //Méthode qui attaque une case
     void sendAtk(int xCible, int yCible) {
+        trame = new byte[5];
         trame[0]='A';
         trame[1]='T';
         trame[2]='K';

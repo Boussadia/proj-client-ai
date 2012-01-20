@@ -4,8 +4,8 @@ public class Grille {
 
     private int lignes;
     private int colonnes;
-    private int xDepart;
-    private int yDepart;
+    private int ligneDepart;
+    private int colonneDepart;
     private int[][] humains;
     private int[][] vampires;
     private int[][] loups;
@@ -19,8 +19,8 @@ public class Grille {
     }
 
     void setCaseDepart(int xDepart, int yDepart) {
-        this.xDepart = xDepart;
-        this.yDepart = yDepart;
+        this.ligneDepart = xDepart;
+        this.colonneDepart = yDepart;
     }
 
     void ajouterHumain(int xHumain, int yHumain) {
