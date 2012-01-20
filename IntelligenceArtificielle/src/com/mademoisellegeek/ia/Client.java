@@ -54,7 +54,7 @@ public class Client {
         // Méthode qui permet de recevoir une trame (Turn dans le cas nominal)
     void receiveTrame() throws Exception {
         //TODO
-        in.read(trame, 0, 43);
+        in.read(trame, 0, 3);
 
         /*switch (trame[1]) {
             case 0x44: {
@@ -111,7 +111,8 @@ public class Client {
         
     //Méthode qui indique les maisons dans la grille
     void receiveHum() {
-        //TODO
+        //1 octet N
+        //N*3 octets x,y,n(avec n le nb d'habitants de la maison)
     }
         
     //Méthode qui indique la case de départ
