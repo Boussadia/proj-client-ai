@@ -155,14 +155,38 @@ public class Client {
     
     //Méthode qui déplace des individus d'une case à l'autre
     void sendMov(int xDepart, int yDepart, int nbIndividus, int xArrivee, int yArrivee) {
-        //TODO
-        trame[0] = 'm';
-        //3 octets MOV, 2 octets départ, 1 octet nb d'invididus, 2 octets coordonnées arrivées
+        trame[0] = 'M';
+        trame[1] = 'O';
+        trame[2] = 'V';
+        trame[3] = (byte)xDepart;
+        trame[4] = (byte)yDepart;
+        trame[5] = (byte)nbIndividus;
+        trame[6] = (byte)xArrivee;
+        trame[7] = (byte)yArrivee;
+        try {
+            out.write(trame, 0, 8);
+        }
+        catch (Exception e) {
+            System.out.println("TODO");
+        }
+        System.out.println("La trame MOV est envoyée au serveur");
     }
     
     //Méthode qui attaque une case
-    void sendAtk() {
-        //TODO
+    void sendAtk(int xCible, int yCible) {
+        trame[0]='A';
+        trame[1]='T';
+        trame[2]='K';
+        trame[3]=(byte)xCible;
+        trame[4]=(byte)yCible;
+        try {
+            out.write(trame, 0, 5);
+        }
+        catch (Exception e) {
+            System.out.println("TODO");
+        }
+        System.out.println("La trame ATK est envoyée au serveur");
+        
     }
     
     // Méthode qui permet de fermer le socket client
