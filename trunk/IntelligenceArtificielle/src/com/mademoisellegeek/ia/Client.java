@@ -7,8 +7,8 @@ import java.net.Socket;
 public class Client {
 
     //TODO à mettre dans un fichier config
-    private static final String host = "10.0.0.6";
-    private static final int port = 5555;
+    private static String host = "127.0.0.1";
+    private static int port = 5555;
     
     private Socket socket;
     private byte[] trame;
@@ -17,6 +17,37 @@ public class Client {
     private Grille grille;
 
     public void main(String[] args) throws Exception {
+        
+        //Lecture des arguments pour avoir le port et l'adresse du serveur
+        if(args.length !=4){
+            System.out.println("Pour lancer l'application, il faut donner en paramétres le port (-p) et l'adresse (-h) du serveur.");
+            System.out.println("Par exemple : -p 1000 -h 192.168.0.1");
+            return;
+        }else{
+            //On cherche le port : -p
+            int tempPort = 0;
+            int indexPort = 0;
+            
+            if(args[0].equals("-p")){
+                indexPort = 0;
+            }else if(args[0].equals("-p")){
+                indexPort = 2;
+            }else{
+                System.out.println("Il faut renseigner un port!");
+                System.out.println("Exemple : -p 1000");
+                return;
+            }
+            
+            try{
+                tempPort = Integer.parseInt(args[1]);
+            }catch(Exception e){
+                System.out.println("Le port indiqué : "+args[1]+" n'est pas valide!");
+                return;
+            }
+            port = tempPort;
+            
+            //On cherche l'adresse du serveur : -h
+        }
 
         // Création d'une instance d'un client
         Client client = new Client();
