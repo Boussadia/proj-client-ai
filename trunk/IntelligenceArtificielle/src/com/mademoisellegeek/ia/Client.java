@@ -19,16 +19,14 @@ public class Client {
 
         // Création d'une instance d'un client
         Client client = new Client();
-
         // On boucle à l'infini jusqu'à la fin de la partie 
         while (true) {
-            client.receiveTrame();
-            if (false) {
+            boolean isByeTrame = client.receiveTrame();
+            if (isByeTrame) {
                 //quand la trame de fin de partie est reçue
                 break;
             }
         }
-
         // Fermer le socket client
         client.closeAll();
     }
@@ -52,7 +50,7 @@ public class Client {
     }
     
         // Méthode qui permet de recevoir une trame (Turn dans le cas nominal)
-    void receiveTrame() throws Exception {
+    boolean receiveTrame() throws Exception {
         int nbBytesLus = in.read(trame, 0, 3);
         if (nbBytesLus != 3)
             throw new Exception("TODO");
@@ -95,11 +93,12 @@ public class Client {
             receiveEnd();
         }
         else if (typeTrame.equalsIgnoreCase("BYE")) {
-            receiveBye();
+            return true;
         }
         else {
             throw new Exception ("BIG MOTHER FUCKING PROBLEM");
         }
+        return false;
     }
 
     //Méthode qui permet au serveur de communiquer la grille
@@ -125,11 +124,6 @@ public class Client {
     
     //Méthode qui indique que la partie est terminée
     void receiveEnd() {
-        //TODO
-    }
-
-    //Méthode qui indique que le serveur va couper la liaison
-    void receiveBye() {
         //TODO
     }
     
