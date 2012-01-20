@@ -55,97 +55,71 @@ public class Client {
     void receiveTrame() throws Exception {
         int nbBytesLus = in.read(trame, 0, 3);
         if (nbBytesLus != 3)
-            throw new Exception("BIG FUCKING PROBLEM");
+            throw new Exception("TODO");
         
         String typeTrame = new String(trame, "Cp1252");
         
         if (typeTrame.equalsIgnoreCase("SET")) {
-            
+            nbBytesLus = in.read(trame, 0, 2);
+            if (nbBytesLus != 2)
+                throw new Exception("TODO");
+            receiveSet(trame);
         }
         else if (typeTrame.equalsIgnoreCase("HUM")) {
-            
+            nbBytesLus = in.read(trame, 0, 1);
+            if (nbBytesLus != 1)
+                throw new Exception("TODO");
+            int N = (int)trame[0] & 0xff;
+            nbBytesLus = in.read(trame, 0, 2*N);
+            if (nbBytesLus != 2*N)
+                throw new Exception("TODO");
+            receiveHum(trame);
         }
         else if (typeTrame.equalsIgnoreCase("HME")) {
-            
+            nbBytesLus = in.read(trame, 0, 2);
+            if (nbBytesLus != 2)
+                throw new Exception("TODO");
+            receiveHme(trame);
         }
         else if (typeTrame.equalsIgnoreCase("UPD")) {
-            
+            nbBytesLus = in.read(trame, 0, 1);
+            if (nbBytesLus != 1)
+                throw new Exception("TODO");
+            int N = (int)trame[0] & 0xff;
+            nbBytesLus = in.read(trame, 0, 5*N);
+            if (nbBytesLus != 5*N)
+                throw new Exception("TODO");
+            receiveUpd(trame);
         }
         else if (typeTrame.equalsIgnoreCase("END")) {
-            
+            receiveEnd();
         }
         else if (typeTrame.equalsIgnoreCase("BYE")) {
-            
+            receiveBye();
         }
         else {
             throw new Exception ("BIG MOTHER FUCKING PROBLEM");
         }
-        /*switch (trame[1]) {
-            case 0x44: {
-                this.joueurs.setMessage("Vous avez perdu la partie :(");
-                this.joueurs.repaint();
-                this.repaint();
-                this.setFin(true);
-                return;
-            }
-
-            case 0x57: {
-                this.joueurs.setMessage("Vous avez gagné la partie !");
-                this.joueurs.repaint();
-                this.repaint();
-                this.setFin(true);
-                return;
-            }
-
-            default:
-                break;
-        }
-
-        this.joueurs.addX1(trame[24]);
-        this.joueurs.addY1(trame[27]);
-        this.joueurs.setDir1(trame[29]);
-
-        int x2size = this.joueurs.getX2Size();
-        int y2size = this.joueurs.getY2Size();
-
-        if ((x2size > 1) && (y2size > 1)) {
-            this.joueurs.addX2((x2size - 1), trame[41]);
-            this.joueurs.addY2((y2size - 1), trame[42]);
-        }
-
-        this.joueurs.addX2(trame[35]);
-        this.joueurs.addY2(trame[38]);
-        this.joueurs.setDir2(trame[40]);
-
-        for (i = 0; i < trame[4] && (trame[5 + i] != '.'); i++) {
-            time += (char) trame[5 + i];
-        }
-
-        time += " cs";
-
-        this.joueurs.setMessage(time);
-        joueurs.repaint();
-        this.repaint();*/
     }
 
     //Méthode qui permet au serveur de communiquer la grille
-    void receiveSet() {
+    void receiveSet(byte[] bytes) {
         //TODO
     }
         
     //Méthode qui indique les maisons dans la grille
-    void receiveHum() {
+    void receiveHum(byte[] bytes) {
         //1 octet N
         //N*2 octets x,y,n(avec n le nb d'habitants de la maison)
     }
         
     //Méthode qui indique la case de départ
-    void receiveHme() {
+    void receiveHme(byte[] bytes) {
         //TODO
     }
 
     //Méthode qui indique les modifications à apporter à la grille
-    void receiveUpd() {
+    void receiveUpd(byte[] bytes) {
         //TODO
     }
     
