@@ -136,7 +136,21 @@ public class Client {
     
     //Méthode qui indique le nom du jouer
     void sendNme() {
-        //TODO
+        trame[0] = 'N';
+        trame[1] = 'M';
+        trame[2] = 'E';
+        trame[3] = 'T';
+        trame[4] = 'A';
+        trame[5] = 'N';
+        trame[6] = 'O';
+        trame[7] = 'N';
+        try {
+            out.write(trame, 0, 8);
+        }
+        catch (Exception e) {
+            System.out.println("TODO");
+        }
+        System.out.println("La trame NME est envoyée au serveur.");
     }
     
     //Méthode qui déplace des individus d'une case à l'autre
