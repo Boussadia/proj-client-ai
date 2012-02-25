@@ -27,7 +27,6 @@ public abstract class Minimax implements Cloneable
         LinkedList<Tour> moves = this.listAllLegalMoves();
         if(moves.isEmpty())
         {
-            this.staleMate();
             return;
         }
         else if(moves.size() == 1)
@@ -139,5 +138,4 @@ public abstract class Minimax implements Cloneable
         this.moveAction(tour);
         player *= -1;
     }
-    public abstract void staleMate();
 }
