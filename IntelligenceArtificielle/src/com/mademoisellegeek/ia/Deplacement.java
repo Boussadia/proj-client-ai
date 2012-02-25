@@ -7,11 +7,12 @@ package com.mademoisellegeek.ia;
 class Deplacement {
 
     private int nbIndividus;
-    private int xDepart;
-    private int yDepart;
-    private int xArrivee;
-    private int yArrivee;
+    private Case caseDepart;
+    private Case caseArrivee;
     
-    //TODO
+    public Deplacement(Case caseDepart, Case caseArrivee, int nbIndividus) {
+        this.caseDepart = caseDepart;
+        this.caseArrivee = caseArrivee;
+    }
     
 }

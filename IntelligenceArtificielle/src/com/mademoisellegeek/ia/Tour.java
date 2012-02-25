@@ -1,18 +1,19 @@
 package com.mademoisellegeek.ia;
 
+import java.util.ArrayList;
+
 /**
  *
  * @author cbaldock
  */
 public class Tour {
     
-    Deplacement[] deplacements = new Deplacement[2];
-    int xCible;
-    int yCible;
-    boolean attaque;
-    Grille resultat;
-    int evaluation;
+    ArrayList<Deplacement> deplacements = new ArrayList<Deplacement>();
+    Case cible;
     
-    //TODO
+    public Tour(ArrayList<Deplacement> deplacements, Case cible) {
+        this.deplacements = deplacements;
+        this.cible = cible;
+    }
     
 }
