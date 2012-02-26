@@ -40,6 +40,7 @@ public class Client {
             ai = new AI();
             in = socket.getInputStream();
             out = socket.getOutputStream();
+            sendNme();
         } catch (Exception e) {
             e.printStackTrace();
             return;
@@ -84,7 +85,21 @@ public class Client {
                 throw new Exception("Erreur de lecture de la trame HME");
             }
             receiveHme(trame);
-        } else if (typeTrame.equalsIgnoreCase("UPD")) {
+        } else if (typeTrame.equalsIgnoreCase("MAP")) {
+            trame = new byte[1];
+            nbBytesLus = in.read(trame, 0, 1);
+            if (nbBytesLus != 1) {
+                throw new Exception("Erreur de lecture de N de la trame MAP");
+            }
+            int N = (int) trame[0] & 0xff;
+            trame = new byte[5 * N];
+            nbBytesLus = in.read(trame, 0, 5 * N);
+            if (nbBytesLus != 5 * N) {
+                throw new Exception("Erreur de lecture des données de la trame MAP");
+            }
+            receiveMap(N, trame);
+        }
+            else if (typeTrame.equalsIgnoreCase("UPD")) {
             trame = new byte[1];
             nbBytesLus = in.read(trame, 0, 1);
             if (nbBytesLus != 1) {
@@ -147,6 +162,19 @@ public class Client {
             //TODO remplacer par ai.jouer
         }
     }
+    
+    //Méthode qui reçoit la grille pour la première fois
+    void receiveMap(int nbUpdates, byte[] bytes) {
+        for (int i = 0; i < nbUpdates; i++) {
+            int xCase = (int) bytes[5 * i] & 0xff;
+            int yCase = (int) bytes[5 * i + 1] & 0xff;
+            int nbHumains = (int) bytes[5 * i + 2] & 0xff;
+            int nbVampires = (int) bytes[5 * i + 3] & 0xff;
+            int nbLoupsGarous = (int) bytes[5 * i + 4] & 0xff;
+            System.out.println("MAP" + xCase + " " + yCase + " " + nbHumains + " " + nbVampires + "   " + nbLoupsGarous);
+            grille.update(xCase, yCase, nbHumains, nbVampires, nbLoupsGarous);
+        }
+    }
 
     //Méthode qui indique que la partie est terminée
     void receiveEnd() {
@@ -155,6 +183,7 @@ public class Client {
 
     //Méthode qui indique le nom du joueur
     static void sendNme() {
+        System.out.println("SENT NME");
         byte[] trame = new byte[7];
         trame[0] = 'N';
         trame[1] = 'M';

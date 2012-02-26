@@ -16,9 +16,9 @@ public class Grille extends Minimax implements Cloneable {
     public Grille(int nbLignes, int nbColonnes) {
         this.lignes = nbLignes;
         this.colonnes = nbColonnes;
-        this.humains = new int[nbLignes][nbColonnes];
-        this.vampires = new int[nbLignes][nbColonnes];
-        this.loups = new int[nbLignes][nbColonnes];
+        this.humains = new int[nbColonnes][nbLignes];
+        this.vampires = new int[nbColonnes][nbLignes];
+        this.loups = new int[nbColonnes][nbLignes];
     }
 
     void setCaseDepart(int xDepart, int yDepart) {
@@ -26,6 +26,7 @@ public class Grille extends Minimax implements Cloneable {
     }
 
     void ajouterHumain(int xHumain, int yHumain) {
+        System.out.println("ajout de x " +  xHumain + " ajout de y " + yHumain);
         this.humains[xHumain][yHumain]++;
     }
 
@@ -63,10 +64,10 @@ public class Grille extends Minimax implements Cloneable {
         for (int i = 0; i < lignes; i++) {
             for (int j = 0; j < colonnes; j++) {
                 if (vampires[i][j] != 0) {
-                    Case caseDepart = new Case(i, j);
+                    Case start = new Case(i, j);
                     //mouvements possibles
                     ArrayList<Case> casesVidesAdjacentes = getCasesAdjacentes(i, j, true, false, false);
-                    addCombs(casesVidesAdjacentes, new Stack(), vampires[i][j], list, caseDepart);
+                    addCombs(casesVidesAdjacentes, new Stack(), vampires[i][j], list, start);
                     //attaques possibles
                     ArrayList<Case> casesEnnemisAdjacentes = getCasesAdjacentes(i, j, false, true, true);
                     for (Case caseAdjacente : casesEnnemisAdjacentes) {
@@ -83,10 +84,10 @@ public class Grille extends Minimax implements Cloneable {
         for (int i = 0; i < lignes; i++) {
             for (int j = 0; j < colonnes; j++) {
                 if (loups[i][j] != 0) {
-                    Case caseDepart = new Case(i, j);
+                    Case start = new Case(i, j);
                     //mouvements possibles
                     ArrayList<Case> casesVidesAdjacentes = getCasesAdjacentes(i, j, false, true, false);
-                    addCombs(casesVidesAdjacentes, new Stack(), vampires[i][j], list, caseDepart);
+                    addCombs(casesVidesAdjacentes, new Stack(), vampires[i][j], list, start);
                     //attaques possibles
                     ArrayList<Case> casesEnnemisAdjacentes = getCasesAdjacentes(i, j, true, false, true);
                     for (Case caseAdjacente : casesEnnemisAdjacentes) {
@@ -98,9 +99,34 @@ public class Grille extends Minimax implements Cloneable {
         return list;
     }
 
-    private ArrayList<Case> getCasesAdjacentes(int x, int y, boolean vampires, boolean loups, boolean humains) {
+    private ArrayList<Case> getCasesAdjacentes(int x, int y, boolean vampiresPresents, 
+                                               boolean loupsPresents,
+                                               boolean humainsPresents) {
         ArrayList<Case> cases = new ArrayList<Case>();
-        //TODO
+        //case x,y-1
+        if ((y>0) && ((!vampiresPresents && vampires[x][y-1] != 0) ||
+                (!loupsPresents && loups[x][y-1] != 0) ||
+                (!humainsPresents && humains[x][y-1] != 0))) {
+            cases.add(new Case(x, y-1));
+        }
+        //case x,y+1
+        if ((y<colonnes-1) && ((!vampiresPresents && vampires[x][y+1] != 0) ||
+                (!loupsPresents && loups[x][y+1] != 0) ||
+                (!humainsPresents && humains[x][y+1] != 0))) {
+            cases.add(new Case(x, y+1));
+        }
+        //case x-1,y
+        if ((x>0) && ((!vampiresPresents && vampires[x-1][y] != 0) ||
+                (!loupsPresents && loups[x-1][y] != 0) ||
+                (!humainsPresents && humains[x-1][y] != 0))) {
+            cases.add(new Case(x-1, y));
+        }
+        //case x+1,y
+        if ((x<lignes-1) && ((!vampiresPresents && vampires[x+1][y] != 0) ||
+                (!loupsPresents && loups[x+1][y] != 0) ||
+                (!humainsPresents && humains[x+1][y] != 0))) {
+            cases.add(new Case(x+1, y));
+        }
         return cases;
     }
 
