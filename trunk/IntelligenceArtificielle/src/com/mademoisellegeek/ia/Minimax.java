@@ -20,6 +20,7 @@ public abstract class Minimax implements Cloneable
 
     public final void makePerfectMove(int maxSearchDepth)
     {
+        long systemTime = System.currentTimeMillis();
         if(maxSearchDepth == 0)
         {
             return;
@@ -38,16 +39,21 @@ public abstract class Minimax implements Cloneable
         int bestScore = this.player == Minimax.MAX_TURN ? Minimax.MINI_HAS_WON : Minimax.MAX_HAS_WON;
         Tour bestMove  = null;
 
-        for(Tour move : moves)
+        long diff = 0;
+        int i = 0;
+        int nbMoves = moves.size();
+        while((diff < 9500) && (i<nbMoves))
         {
             Minimax tempBoard = (Minimax)this.clone();
-            tempBoard.doMove(move);
+            tempBoard.doMove(moves.get(i));
             int score = tempBoard.evaluate(maxSearchDepth == Minimax.UNLIMITED_SEARCH_DEPTH ? Minimax.UNLIMITED_SEARCH_DEPTH : maxSearchDepth - 1, new AlphaBeta());
             if(score * player < bestScore || bestMove == null)
             {
                 bestScore = score * player;
-                bestMove  = move;
+                bestMove  = moves.get(i);
             }
+            diff = System.currentTimeMillis() - systemTime;
+            i++;
         }
         doMove(bestMove);
     }

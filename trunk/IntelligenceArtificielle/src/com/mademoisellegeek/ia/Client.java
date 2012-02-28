@@ -3,7 +3,6 @@ package com.mademoisellegeek.ia;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.util.Stack;
 
 public class Client {
 
@@ -158,9 +157,8 @@ public class Client {
             int nbLoupsGarous = (int) bytes[5 * i + 4] & 0xff;
             System.out.println("UPDATE" + xCase + " " + yCase + " " + nbHumains + " " + nbVampires + "   " + nbLoupsGarous);
             grille.update(xCase, yCase, nbHumains, nbVampires, nbLoupsGarous);
-            ai.testJouer(grille);
-            //TODO remplacer par ai.jouer
         }
+        ai.jouer(grille);
     }
     
     //Méthode qui reçoit la grille pour la première fois
@@ -173,6 +171,7 @@ public class Client {
             int nbLoupsGarous = (int) bytes[5 * i + 4] & 0xff;
             System.out.println("MAP" + xCase + " " + yCase + " " + nbHumains + " " + nbVampires + "   " + nbLoupsGarous);
             grille.update(xCase, yCase, nbHumains, nbVampires, nbLoupsGarous);
+            grille.setNousSommesVampires();
         }
     }
 
@@ -199,20 +198,26 @@ public class Client {
         }
         System.out.println("La trame NME est envoyée au serveur.");
     }
-
+    
     //Méthode qui déplace des individus d'une case à l'autre
-    static void sendMov(int xDepart, int yDepart, int nbIndividus, int xArrivee, int yArrivee) {
-        byte[] trame = new byte[8];
+    static void sendMov(Deplacement deplacement) {
+        int nbMouvements = deplacement.getMouvements().size();
+        byte[] trame = new byte[4+5*nbMouvements];
         trame[0] = 'M';
         trame[1] = 'O';
         trame[2] = 'V';
-        trame[3] = (byte) xDepart;
-        trame[4] = (byte) yDepart;
-        trame[5] = (byte) nbIndividus;
-        trame[6] = (byte) xArrivee;
-        trame[7] = (byte) yArrivee;
+        trame[3] = (byte) nbMouvements;
+        int index = 4;
+        for(Mouvement mouvement: deplacement.getMouvements()) {
+            trame[index] = (byte)mouvement.getXDepart();
+            trame[index+1] = (byte)mouvement.getYDepart();
+            trame[index+2] = (byte)mouvement.getNbIndividus();
+            trame[index+3] = (byte)mouvement.getXArrivee();
+            trame[index+4] = (byte)mouvement.getYArrivee();
+            index+=5;
+        }
         try {
-            out.write(trame, 0, 8);
+            out.write(trame, 0, 4+5*nbMouvements);
         } catch (Exception e) {
             System.out.println("Erreur d'écriture de la trame MOV");
         }
@@ -220,20 +225,19 @@ public class Client {
     }
 
     //Méthode qui attaque une case
-    static void sendAtk(int xCible, int yCible) {
+    static void sendAtk(Case cible) {
         byte[] trame = new byte[5];
         trame[0] = 'A';
         trame[1] = 'T';
         trame[2] = 'K';
-        trame[3] = (byte) xCible;
-        trame[4] = (byte) yCible;
+        trame[3] = (byte) cible.getX();
+        trame[4] = (byte) cible.getY();
         try {
             out.write(trame, 0, 5);
         } catch (Exception e) {
             System.out.println("Erreur d'écriture de la trame ATK");
         }
         System.out.println("La trame ATK est envoyée au serveur");
-
     }
 
     // Méthode qui permet de fermer le socket client

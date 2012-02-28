@@ -2,7 +2,6 @@ package com.mademoisellegeek.ia;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.Stack;
 
 public class Grille extends Minimax implements Cloneable {
 
@@ -12,6 +11,8 @@ public class Grille extends Minimax implements Cloneable {
     private int[][] humains;
     private int[][] vampires;
     private int[][] loups;
+    private boolean nousSommesVampires;
+    private static int HUMAIN = 1000;
 
     public Grille(int nbLignes, int nbColonnes) {
         this.lignes = nbLignes;
@@ -25,15 +26,19 @@ public class Grille extends Minimax implements Cloneable {
         this.caseDepart = new Case(xDepart, yDepart);
     }
 
+    Case getCaseDepart() {
+        return this.caseDepart;
+    }
+
     void ajouterHumain(int xHumain, int yHumain) {
-        System.out.println("ajout de x " +  xHumain + " ajout de y " + yHumain);
+        System.out.println("ajout de x " + xHumain + " ajout de y " + yHumain);
         this.humains[xHumain][yHumain]++;
     }
 
     void vider() {
-        this.humains = new int[lignes][colonnes];
-        this.vampires = new int[lignes][colonnes];
-        this.loups = new int[lignes][colonnes];
+        this.humains = new int[colonnes][lignes];
+        this.vampires = new int[colonnes][lignes];
+        this.loups = new int[colonnes][lignes];
     }
 
     void update(int xCase, int yCase, int nbHumains, int nbVampires, int nbLoupsGarous) {
@@ -44,34 +49,108 @@ public class Grille extends Minimax implements Cloneable {
 
     @Override
     public int getCurrentScore() {
-        //TODO fonction de calcul du "score" de chaque grille
-        return 1;
+        int score = 0;
+        for (int i=0; i<colonnes; i++) {
+            for (int j=0; i<lignes; j++) {
+                if (humains[i][j]!=0) {
+                    int nbMonstresNecessaires = humains[i][j];
+                    int nbVampiresMovesNeeded = GrilleUtils.distanceVampires(i,j,nbMonstresNecessaires, vampires, lignes, colonnes);
+                    int nbLoupsMovesNeeded = GrilleUtils.distanceLoups(i,j,nbMonstresNecessaires, loups, lignes, colonnes);
+                    if (nbVampiresMovesNeeded>nbLoupsMovesNeeded) {
+                        if (nousSommesVampires) {
+                            score += humains[i][j]*HUMAIN;
+                        }
+                        else {
+                            score -= humains[i][j]*HUMAIN;
+                        }
+                    }
+                    else {
+                        if (nousSommesVampires) {
+                            score -= humains[i][j]*HUMAIN;
+                        }
+                        else {
+                            score += humains[i][j]*HUMAIN;
+                        }
+                    }
+                }
+            }
+        }
+        //TODO protéger nos vampires, cette fonction est kamikaze
+        return score;
     }
 
     @Override
     public LinkedList<Tour> listAllLegalMoves() {
-        LinkedList<Tour> touslesTours = this.getPlayer() == Minimax.MAX_TURN ? this.mouvementsVampiresPossibles() : this.mouvementsLoupsPossibles();
+        LinkedList<Tour> touslesTours;
+        if (nousSommesVampires) {
+            touslesTours = this.getPlayer() == Minimax.MAX_TURN ? this.mouvementsVampiresPossibles() : this.mouvementsLoupsPossibles();
+        } else {
+            touslesTours = this.getPlayer() == Minimax.MAX_TURN ? this.mouvementsLoupsPossibles() : this.mouvementsVampiresPossibles();
+        }
         return touslesTours;
     }
 
     @Override
     public void moveAction(Tour tour) {
-        //TODO faire l'action et mettre à jour la grille
+        if (tour.getType() == TypeTour.DEPLACEMENT) {
+            ArrayList<Mouvement> mouvements = ((Deplacement) tour).getMouvements();
+            for (Mouvement mouvement : mouvements) {
+                int xDepart = mouvement.getXDepart();
+                int yDepart = mouvement.getXDepart();
+                int xArrivee = mouvement.getXArrivee();
+                int yArrivee = mouvement.getYArrivee();
+                if (tour.estTourDesVampires()) {
+                    this.update(xDepart,
+                            yDepart,
+                            0,
+                            vampires[xDepart][yDepart] - mouvement.getNbIndividus(),
+                            0);
+                    this.update(xArrivee,
+                            yArrivee,
+                            0,
+                            vampires[xArrivee][yArrivee] + mouvement.getNbIndividus(),
+                            0);
+                } else {
+                    this.update(xDepart,
+                            yDepart,
+                            0,
+                            0,
+                            loups[xDepart][yDepart] - mouvement.getNbIndividus());
+                    this.update(xArrivee,
+                            yArrivee,
+                            0,
+                            0,
+                            loups[xArrivee][yArrivee] + mouvement.getNbIndividus());
+                }
+            }
+        } else {
+            Case cible = ((Attaque) tour).getCible();
+            //TODO aleatoire
+            boolean tourDesVampires = tour.estTourDesVampires();
+            ArrayList<Case> casesAdjacentes = GrilleUtils.getCasesAdjacentes(cible, tourDesVampires, vampires, loups, humains, colonnes, lignes);
+            if (humains[cible.getX()][cible.getY()] > 0) {
+                int nombreAttaquants = nombreAttaquants(casesAdjacentes, tourDesVampires);
+                    if (tourDesVampires) {
+                        this.update(cible.getX(), cible.getY(), 0, nombreAttaquants, 0);
+                    } else {
+                        this.update(cible.getX(), cible.getY(), 0, 0, nombreAttaquants);
+                    }
+            }
+        }
     }
 
     public LinkedList<Tour> mouvementsVampiresPossibles() {
         LinkedList<Tour> list = new LinkedList<Tour>();
-        for (int i = 0; i < lignes; i++) {
-            for (int j = 0; j < colonnes; j++) {
+        for (int i = 0; i < colonnes; i++) {
+            for (int j = 0; j < lignes; j++) {
                 if (vampires[i][j] != 0) {
                     Case start = new Case(i, j);
                     //mouvements possibles
-                    ArrayList<Case> casesVidesAdjacentes = getCasesAdjacentes(i, j, true, false, false);
-                    addCombs(casesVidesAdjacentes, new Stack(), vampires[i][j], list, start);
+                    GrilleUtils.addMouvementsPossibles(i, j, false, list, vampires, loups, humains, colonnes, lignes);
                     //attaques possibles
-                    ArrayList<Case> casesEnnemisAdjacentes = getCasesAdjacentes(i, j, false, true, true);
+                    ArrayList<Case> casesEnnemisAdjacentes = GrilleUtils.getCasesAdjacentes(i, j, false, true, true, vampires, loups, humains, colonnes, lignes);
                     for (Case caseAdjacente : casesEnnemisAdjacentes) {
-                        list.add(new Tour(null, caseAdjacente));
+                        list.add(new Attaque(caseAdjacente, true, estAttaqueAleatoire(caseAdjacente, true)));
                     }
                 }
             }
@@ -81,17 +160,16 @@ public class Grille extends Minimax implements Cloneable {
 
     public LinkedList<Tour> mouvementsLoupsPossibles() {
         LinkedList<Tour> list = new LinkedList<Tour>();
-        for (int i = 0; i < lignes; i++) {
-            for (int j = 0; j < colonnes; j++) {
+        for (int i = 0; i < colonnes; i++) {
+            for (int j = 0; j < lignes; j++) {
                 if (loups[i][j] != 0) {
                     Case start = new Case(i, j);
                     //mouvements possibles
-                    ArrayList<Case> casesVidesAdjacentes = getCasesAdjacentes(i, j, false, true, false);
-                    addCombs(casesVidesAdjacentes, new Stack(), vampires[i][j], list, start);
+                    GrilleUtils.addMouvementsPossibles(i, j, false, list, vampires, loups, humains, colonnes, lignes);
                     //attaques possibles
-                    ArrayList<Case> casesEnnemisAdjacentes = getCasesAdjacentes(i, j, true, false, true);
+                    ArrayList<Case> casesEnnemisAdjacentes = GrilleUtils.getCasesAdjacentes(i, j, true, false, true, vampires, loups, humains, colonnes, lignes);
                     for (Case caseAdjacente : casesEnnemisAdjacentes) {
-                        list.add(new Tour(null, caseAdjacente));
+                        list.add(new Attaque(caseAdjacente, false, estAttaqueAleatoire(caseAdjacente, false)));
                     }
                 }
             }
@@ -99,61 +177,70 @@ public class Grille extends Minimax implements Cloneable {
         return list;
     }
 
-    private ArrayList<Case> getCasesAdjacentes(int x, int y, boolean vampiresPresents, 
-                                               boolean loupsPresents,
-                                               boolean humainsPresents) {
-        ArrayList<Case> cases = new ArrayList<Case>();
-        //case x,y-1
-        if ((y>0) && ((!vampiresPresents && vampires[x][y-1] != 0) ||
-                (!loupsPresents && loups[x][y-1] != 0) ||
-                (!humainsPresents && humains[x][y-1] != 0))) {
-            cases.add(new Case(x, y-1));
+    public void printout() {
+        System.out.println("nb colonnes ");
+        System.out.println("nb lignes ");
+        for (int i = 0; i < colonnes; i++) {
+            for (int j = 0; j < lignes; j++) {
+                if (vampires[i][j] != 0) {
+                    System.out.println(vampires[i][j] + " vampires " + "sur case " + i + " ," + j);
+                }
+            }
         }
-        //case x,y+1
-        if ((y<colonnes-1) && ((!vampiresPresents && vampires[x][y+1] != 0) ||
-                (!loupsPresents && loups[x][y+1] != 0) ||
-                (!humainsPresents && humains[x][y+1] != 0))) {
-            cases.add(new Case(x, y+1));
+        for (int i = 0; i < colonnes; i++) {
+            for (int j = 0; j < lignes; j++) {
+                if (loups[i][j] != 0) {
+                    System.out.println(loups[i][j] + " loups " + "sur case " + i + " ," + j);
+                }
+            }
         }
-        //case x-1,y
-        if ((x>0) && ((!vampiresPresents && vampires[x-1][y] != 0) ||
-                (!loupsPresents && loups[x-1][y] != 0) ||
-                (!humainsPresents && humains[x-1][y] != 0))) {
-            cases.add(new Case(x-1, y));
-        }
-        //case x+1,y
-        if ((x<lignes-1) && ((!vampiresPresents && vampires[x+1][y] != 0) ||
-                (!loupsPresents && loups[x+1][y] != 0) ||
-                (!humainsPresents && humains[x+1][y] != 0))) {
-            cases.add(new Case(x+1, y));
-        }
-        return cases;
-    }
-
-    public static void addCombs(ArrayList<Case> casesVidesAdjacentes, Stack<Integer> used, int val, LinkedList<Tour> list, Case caseDepart) {
-        if (val == 0) {
-            ArrayList<Deplacement> deplacements = getDeplacements(used, casesVidesAdjacentes, caseDepart);
-            list.add(new Tour(deplacements, null));
-            return;
-        }
-        if (val < 0) {
-            return;
-        }
-
-        for (int i = val; i >= 0; i--) {
-            if (used.size() < casesVidesAdjacentes.size()) {
-                used.push(i);
-                addCombs(casesVidesAdjacentes, used, val - i, list, caseDepart);
-                used.pop();
+        for (int i = 0; i < colonnes; i++) {
+            for (int j = 0; j < lignes; j++) {
+                if (humains[i][j] != 0) {
+                    System.out.println(humains[i][j] + " humains " + "sur case " + i + " ," + j);
+                }
             }
         }
     }
 
-    private static ArrayList<Deplacement> getDeplacements(Stack<Integer> used, ArrayList<Case> casesVidesAdjacentes, Case caseDepart) {
-        ArrayList<Deplacement> deplacements = new ArrayList<Deplacement>();
-        for (int i=0; i<used.size(); i++) {
-            deplacements.add(new Deplacement(caseDepart, casesVidesAdjacentes.get(i), used.pop()));
+    private int nombreAttaquants(ArrayList<Case> casesAdjacentes, boolean tourDesVampires) {
+        int result = 0;
+        for (Case caseAdjacente : casesAdjacentes) {
+            if (tourDesVampires) {
+                result += vampires[caseAdjacente.getX()][caseAdjacente.getY()];
+            } else {
+                result += loups[caseAdjacente.getX()][caseAdjacente.getY()];
+            }
         }
-        return deplacements;
+        return result;
     }
+
+    public void setNousSommesVampires() {
+        this.nousSommesVampires = (vampires[caseDepart.getX()][caseDepart.getY()] > 0);
+    }
+
+    public boolean getNousSommesVampires() {
+        return this.nousSommesVampires;
+    }
+
+    private boolean estAttaqueAleatoire(Case caseAdjacente, boolean estVampires) {
+        int nbVampires = vampires[caseAdjacente.getX()][caseAdjacente.getY()];
+        int nbLoups = loups[caseAdjacente.getX()][caseAdjacente.getY()];
+        int nbHumains = humains[caseAdjacente.getX()][caseAdjacente.getY()];
+        if (estVampires) {
+            if (nbHumains > 0) {
+                return (nbHumains > nbVampires);
+            } else {
+                return (1.5 * nbLoups > nbVampires);
+            }
+        } else {
+            if (nbHumains > 0) {
+                return (nbHumains > nbLoups);
+            } else {
+                return (1.5 * nbVampires > nbLoups);
+            }
+        }
+    }
+    
+    
 }
