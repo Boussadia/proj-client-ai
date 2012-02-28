@@ -16,6 +16,7 @@ public class Client {
 
     public static void main(String[] args) throws Exception {
 
+        //TODO hote et port dans fichier config
         getHostAndPort(args);
 
         Client client = new Client();
