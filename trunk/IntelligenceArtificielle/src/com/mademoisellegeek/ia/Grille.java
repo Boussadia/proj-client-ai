@@ -240,7 +240,5 @@ public class Grille extends Minimax implements Cloneable {
                 return (1.5 * nbVampires > nbLoups);
             }
         }
-    }
-    
-    
+    }   
 }
