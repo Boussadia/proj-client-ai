@@ -1,5 +1,7 @@
 package com.mademoisellegeek.ia;
 
+import java.util.ArrayList;
+
 public class AI {
 
     private static int nbTours;
@@ -9,35 +11,27 @@ public class AI {
     }
 
     public static void testJouer(Grille grille) {
+        grille.printout();
+        ArrayList<Mouvement> mouvements = new ArrayList<Mouvement>();
         switch (nbTours) {
             case 0:
-                Client.sendMov(5, 4, 1, 5, 3);
+                Mouvement mouvement = new Mouvement(new Case(28,14), new Case(27,14), 5);
+                mouvements.add(mouvement);
+                Deplacement deplacement = new Deplacement(mouvements, true);
+                Client.sendMov(deplacement);
                 break;
             case 1:
-                Client.sendMov(5, 3, 1, 5, 2);
-                break;
-            case 2:
-                Client.sendMov(5, 2, 1, 4, 2);
-                break;
-            case 3:
-                Client.sendMov(4, 2, 1, 3, 2);
-                break;
-            case 4:
-                Client.sendMov(3, 2, 1, 2, 2);
-                break;
-            case 5:
-                Client.sendMov(2, 2, 1, 3, 3);
-                break;
-            case 6:
-                Client.sendAtk(2, 3);
+                Mouvement mouvement2 = new Mouvement(new Case(27,14), new Case(26,14), 3);
+                mouvements.add(mouvement2);
+                Deplacement deplacement2 = new Deplacement(mouvements, true);
+                Client.sendMov(deplacement2);
                 break;
         }
         nbTours++;
     }
     
     public static void jouer(Grille grille) {
-        grille.makePerfectMove(3);//pour l'instant 3 
-        //TODO ajouter le chrono et ajouter réglage de profondeur
+        grille.makePerfectMove(26);//TODO profondeur ???
         return;
     }
 }

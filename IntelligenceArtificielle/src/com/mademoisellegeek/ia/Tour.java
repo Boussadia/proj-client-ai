@@ -1,19 +1,27 @@
 package com.mademoisellegeek.ia;
 
-import java.util.ArrayList;
-
 /**
  *
  * @author cbaldock
  */
 public class Tour {
     
-    ArrayList<Deplacement> deplacements = new ArrayList<Deplacement>();
-    Case cible;
+    private boolean vampires;
+    private TypeTour type;
     
-    public Tour(ArrayList<Deplacement> deplacements, Case cible) {
-        this.deplacements = deplacements;
-        this.cible = cible;
+    public boolean estTourDesVampires() {
+        return this.vampires;
     }
     
+    public TypeTour getType() {
+        return this.type;
+    }
+    
+    public void setType(TypeTour type) {
+        this.type = type;
+    }
+    
+    public void setIsVampires(boolean vampires) {
+        this.vampires = vampires;
+    }
 }

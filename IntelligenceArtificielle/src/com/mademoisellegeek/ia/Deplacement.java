@@ -1,18 +1,37 @@
 package com.mademoisellegeek.ia;
 
+import java.util.ArrayList;
+
 /**
  *
  * @author cbaldock
  */
-class Deplacement {
+public class Deplacement extends Tour {
 
-    private int nbIndividus;
-    private Case caseDepart;
-    private Case caseArrivee;
-    
-    public Deplacement(Case caseDepart, Case caseArrivee, int nbIndividus) {
-        this.caseDepart = caseDepart;
-        this.caseArrivee = caseArrivee;
+    private ArrayList<Mouvement> mouvements;
+
+    public Deplacement(ArrayList<Mouvement> mouvements, boolean vampires) {
+        this.mouvements = mouvements;
+        this.setIsVampires(vampires);
+        this.setType(TypeTour.DEPLACEMENT);
     }
-    
+
+    public ArrayList<Mouvement> getMouvements() {
+        return this.mouvements;
+    }
+
+    public void printout() {
+        for (Mouvement mouvement : this.mouvements) {
+            System.out.println("Mouvement de "+
+                               mouvement.getNbIndividus()+
+                               " personnes de "+
+                               mouvement.getXDepart()+
+                               ","+
+                               mouvement.getYDepart()+
+                               " à "+
+                               mouvement.getXArrivee()+
+                               ","+
+                               mouvement.getYArrivee());
+        }
+    }
 }
