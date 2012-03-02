@@ -93,11 +93,18 @@ public class GrilleUtils {
     
     public static int distanceVampires(int i, int j, int nbMonstresNecessaires, int[][] vampires, int lignes, int colonnes) {
         int[] dict = new int[lignes+colonnes];
-/* dictionnaire dont la taille correspond à la distance Manhattan maximale */
+        /* dictionnaire dont la taille correspond 
+         * à la distance Manhattan maximale lignes+colonnes */
         
         for (int k=0; k<colonnes; k++) {
             for (int l=0; l<lignes; l++) {
                 dict[Utils.distance(i,j,k,l)] += vampires[k][l];
+                /*
+                 Dictionnaire en fonction de la distance Manhattan donne 
+                 le nombre de vampires à portée de coups m.
+                 * dict[2] donne le nombre de vampires qui sont à deux coups des
+                 * humains de la case (i,j)
+                 */
             }
         }
         int m=-1;
@@ -106,7 +113,11 @@ public class GrilleUtils {
             m++;
             nbVampires += dict[m];
         }
-        return m;
+        /*
+         * Nombre de coups qu'il faut faire pour
+         * attaquer les humains avec des vampires depuis la case (i,j)
+         */
+        return m;/* distance Manhattan*/
     }
     
     public static int distanceLoups(int i, int j, int nbMonstresNecessaires, int[][] loups, int lignes, int colonnes) {
