@@ -86,9 +86,9 @@ public class Grille extends Minimax implements Cloneable {
     public LinkedList<Tour> listAllLegalMoves() {
         LinkedList<Tour> touslesTours;
         if (nousSommesVampires) {
-            touslesTours = this.getPlayer() == Minimax.MAX_TURN ? this.mouvementsVampiresPossibles() : this.mouvementsLoupsPossibles();
+            touslesTours = this.mouvementsVampiresPossibles();
         } else {
-            touslesTours = this.getPlayer() == Minimax.MAX_TURN ? this.mouvementsLoupsPossibles() : this.mouvementsVampiresPossibles();
+            touslesTours = this.mouvementsLoupsPossibles();
         }
         return touslesTours;
     }
