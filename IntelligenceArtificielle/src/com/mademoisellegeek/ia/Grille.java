@@ -78,7 +78,7 @@ public class Grille extends Minimax implements Cloneable {
                 }
             }
         }
-        //TODO protéger nos vampires, cette fonction est kamikaze
+        //TODO JEAN protéger nos vampires, cette fonction est kamikaze
         return score;
     }
 
@@ -128,7 +128,8 @@ public class Grille extends Minimax implements Cloneable {
             }
         } else {
             Case cible = ((Attaque) tour).getCible();
-            //TODO aleatoire
+            //TODO CLB aleatoire
+            //TODO CLB fixer tous les bugs
             boolean tourDesVampires = tour.estTourDesVampires();
             ArrayList<Case> casesAdjacentes = GrilleUtils.getCasesAdjacentes(cible, tourDesVampires, vampires, loups, humains, colonnes, lignes);
             if (humains[cible.getX()][cible.getY()] > 0) {

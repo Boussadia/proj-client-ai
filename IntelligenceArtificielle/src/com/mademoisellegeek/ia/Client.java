@@ -1,9 +1,9 @@
 package com.mademoisellegeek.ia;
 
 import com.mademoisellegeek.ia.config.ConfigTextParser;
+import com.mademoisellegeek.ia.data.Case;
 import com.mademoisellegeek.ia.data.Deplacement;
 import com.mademoisellegeek.ia.data.Mouvement;
-import com.mademoisellegeek.ia.data.Case;
 import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -19,18 +19,13 @@ public class Client {
     private Grille grille;
     private AI ai;
     private boolean firstUpdate = true;
-    
     private static String configFilePath;
-    
-    
     private static String teamName;
-    
     private static ConfigTextParser parser;
 
     public static void main(String[] args) throws Exception {
         
-        //TODO hote et port dans fichier config (et le nom de l'équipe TROIS CARACTERES)
-        getHostAndPort(args);
+        getConfigValues(args);
 
         Client client = new Client();
         // On boucle à l'infini jusqu'à la fin de la partie 
@@ -265,7 +260,7 @@ public class Client {
         socket.close();
     }
 
-    private static void getHostAndPort(String[] args) {
+    private static void getConfigValues(String[] args) {
         //on récupére les informations du serveur
         System.out.println("Absoulte pat : " + (new File("test.java")).getAbsolutePath());
         
