@@ -19,6 +19,11 @@ public class Client {
     private AI ai;
     private boolean firstUpdate = true;
     
+    private static String configFilePath;
+    
+    
+    private String teamName;
+    
     private static ConfigTextParser parser;
 
     public static void main(String[] args) throws Exception {
