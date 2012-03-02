@@ -56,10 +56,38 @@ public class Grille extends Minimax implements Cloneable {
         for (int i=0; i<colonnes; i++) {
             for (int j=0; j<lignes; j++) {
                 if (humains[i][j]!=0) {
+                    /*
+                     * Pour chaque case, calculer le nombre de coups qu'il faut pour l'attaquer
+                     */
                     int nbMonstresNecessaires = humains[i][j];
                     int nbVampiresMovesNeeded = GrilleUtils.distanceVampires(i,j,nbMonstresNecessaires, vampires, lignes, colonnes);
                     int nbLoupsMovesNeeded = GrilleUtils.distanceLoups(i,j,nbMonstresNecessaires, loups, lignes, colonnes);
-                    if (nbVampiresMovesNeeded>nbLoupsMovesNeeded) {
+                    switch (nousSommesVampires) 
+                    {
+                        case 0: // Cas où nous sommes des loups garous
+                            System.out.println("Nous sommes des loups garous ");
+                            if (nbVampiresMovesNeeded<nbLoupsMovesNeeded) // Il nous faut plus de coups que nos ennemis
+                            {
+                                score -= humains[i][j]*HUMAIN;
+                            }
+                            
+                            break;
+                        case 1: // Cas où nous sommes des vampires
+                            System.out.println("Nous sommes des vampires ");
+                            if (nbVampiresMovesNeeded<nbLoupsMovesNeeded) // Il nous faut moins de coups que nos ennemis
+                            {
+                                score += humains[i][j]*HUMAIN;
+                            }
+                            
+                            break;
+                        default:
+                            break;
+                    }
+                    
+                    
+                    
+                        
+                    if (nbVampiresMovesNeeded<nbLoupsMovesNeeded) {
                         if (nousSommesVampires) {
                             score += humains[i][j]*HUMAIN;
                         }

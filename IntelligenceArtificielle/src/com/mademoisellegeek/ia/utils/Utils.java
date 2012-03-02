@@ -53,5 +53,6 @@ public class Utils {
 
     public static Integer distance(int i, int j, int k, int l) {
         return Math.abs(i - k) + Math.abs(j - l);
+        //TODO CAMILLE distance euclidienne possible
     }
 }
