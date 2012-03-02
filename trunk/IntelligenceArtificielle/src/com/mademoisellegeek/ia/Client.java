@@ -199,7 +199,8 @@ public class Client {
 
     //Méthode qui indique le nom du joueur
     static void sendNme() {
-        System.out.println("SENT NME");
+        System.out.println("SENT NME : "+teamName.charAt(0)+teamName.charAt(1)+teamName.charAt(2));
+        
         byte[] trame = new byte[7];
         trame[0] = 'N';
         trame[1] = 'M';
@@ -283,14 +284,12 @@ public class Client {
                 parser = new ConfigTextParser(pathToConfigFile);
                 host = parser.getHost();
                 port = parser.getPort();
-                teamName = parser.getName();
+                teamName = parser.getName().toUpperCase();
             } else {
                 System.out.println("Pour lancer l'application, il faut donner en paramétres le chemin vers le fichier de congfig (-c).");
                 System.out.println("Par exemple : -c \"Path/To/config.txt\"");
                 return;
             }
-            
-            
         }
     }
 }
