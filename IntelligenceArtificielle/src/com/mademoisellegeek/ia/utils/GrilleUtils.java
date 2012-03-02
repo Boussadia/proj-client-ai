@@ -107,11 +107,11 @@ public class GrilleUtils {
                  */
             }
         }
-        int m=-1;
+        int m=-1;// Pourquoi -1 et pas 0 ?
         int nbVampires = 0;
         while (nbVampires<nbMonstresNecessaires && m<lignes+colonnes-1) {
-            m++;
-            nbVampires += dict[m];
+            m++;//on incrémente le nombre de coups
+            nbVampires += dict[m];// On rajoute les vampires à portée m
         }
         /*
          * Nombre de coups qu'il faut faire pour
