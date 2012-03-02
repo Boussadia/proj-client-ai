@@ -16,6 +16,7 @@ public class Client {
     private static OutputStream out;
     private Grille grille;
     private AI ai;
+    private boolean firstUpdate = true;
 
     public static void main(String[] args) throws Exception {
 
@@ -153,6 +154,10 @@ public class Client {
 
     //Méthode qui indique les modifications à apporter à la grille
     void receiveUpd(int nbUpdates, byte[] bytes) {
+        if (firstUpdate) {
+            grille.setNousSommesVampires();
+            firstUpdate = false;
+        }
         for (int i = 0; i < nbUpdates; i++) {
             int xCase = (int) bytes[5 * i] & 0xff;
             int yCase = (int) bytes[5 * i + 1] & 0xff;
@@ -175,7 +180,6 @@ public class Client {
             int nbLoupsGarous = (int) bytes[5 * i + 4] & 0xff;
             System.out.println("MAP" + xCase + " " + yCase + " " + nbHumains + " " + nbVampires + "   " + nbLoupsGarous);
             grille.update(xCase, yCase, nbHumains, nbVampires, nbLoupsGarous);
-            grille.setNousSommesVampires();
         }
     }
 
