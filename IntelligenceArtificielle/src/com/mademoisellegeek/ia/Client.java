@@ -206,9 +206,9 @@ public class Client {
         trame[1] = 'M';
         trame[2] = 'E';
         trame[3] = (byte) 3;
-        trame[4] = 'A';
-        trame[5] = 'H';
-        trame[6] = 'M';
+        trame[4] = (byte) teamName.charAt(0);
+        trame[5] = (byte) teamName.charAt(1);
+        trame[6] = (byte) teamName.charAt(2);
         try {
             out.write(trame, 0, 7);
         } catch (Exception e) {
