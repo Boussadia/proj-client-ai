@@ -93,6 +93,8 @@ public class GrilleUtils {
     
     public static int distanceVampires(int i, int j, int nbMonstresNecessaires, int[][] vampires, int lignes, int colonnes) {
         int[] dict = new int[lignes+colonnes];
+/* dictionnaire dont la taille correspond à la distance Manhattan maximale */
+        
         for (int k=0; k<colonnes; k++) {
             for (int l=0; l<lignes; l++) {
                 dict[Utils.distance(i,j,k,l)] += vampires[k][l];
