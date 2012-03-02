@@ -1,6 +1,5 @@
 package com.mademoisellegeek.ia.alphabeta;
 
-import com.mademoisellegeek.ia.alphabeta.AlphaBeta;
 import com.mademoisellegeek.ia.data.Deplacement;
 import com.mademoisellegeek.ia.data.Tour;
 import java.util.LinkedList;
