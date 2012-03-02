@@ -1,4 +1,6 @@
-package com.mademoisellegeek.ia;
+package com.mademoisellegeek.ia.data;
+
+import com.mademoisellegeek.ia.data.Tour;
 
 /**
  *

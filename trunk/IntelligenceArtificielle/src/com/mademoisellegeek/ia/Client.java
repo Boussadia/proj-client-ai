@@ -1,12 +1,15 @@
 package com.mademoisellegeek.ia;
 
+import com.mademoisellegeek.ia.data.Deplacement;
+import com.mademoisellegeek.ia.data.Mouvement;
+import com.mademoisellegeek.ia.data.Case;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 
 public class Client {
 
-    private static String host = "192.168.0.14";
+    private static String host = "169.254.238.239";
     private static int port = 5555;
     private Socket socket;
     private static InputStream in;
@@ -16,7 +19,7 @@ public class Client {
 
     public static void main(String[] args) throws Exception {
 
-        //TODO hote et port dans fichier config
+        //TODO hote et port dans fichier config (et le nom de l'équipe TROIS CARACTERES)
         getHostAndPort(args);
 
         Client client = new Client();

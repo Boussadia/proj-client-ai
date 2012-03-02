@@ -1,5 +1,8 @@
-package com.mademoisellegeek.ia;
+package com.mademoisellegeek.ia.alphabeta;
 
+import com.mademoisellegeek.ia.alphabeta.AlphaBeta;
+import com.mademoisellegeek.ia.data.Deplacement;
+import com.mademoisellegeek.ia.data.Tour;
 import java.util.LinkedList;
 
 public abstract class Minimax implements Cloneable
@@ -55,6 +58,8 @@ public abstract class Minimax implements Cloneable
             diff = System.currentTimeMillis() - systemTime;
             i++;
         }
+        ((Deplacement)bestMove).printout();
+        this.sendAction(bestMove);
         doMove(bestMove);
     }
 
@@ -139,6 +144,7 @@ public abstract class Minimax implements Cloneable
     public abstract int getCurrentScore();
     public abstract LinkedList listAllLegalMoves();
     public abstract void moveAction(Tour tour);
+    public abstract void sendAction(Tour tour);
     public final void doMove(Tour tour)
     {
         this.moveAction(tour);

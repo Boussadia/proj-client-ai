@@ -2,8 +2,12 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.mademoisellegeek.ia;
+package com.mademoisellegeek.ia.utils;
 
+import com.mademoisellegeek.ia.data.Deplacement;
+import com.mademoisellegeek.ia.data.Mouvement;
+import com.mademoisellegeek.ia.data.Case;
+import com.mademoisellegeek.ia.data.Tour;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
@@ -32,7 +36,7 @@ public class GrilleUtils {
             cases.add(new Case(x, y - 1));
         }
         //case x,y+1
-        if ((y < colonnes - 1) && ((!vampiresPresents && vampires[x][y + 1] == 0)
+        if ((y < lignes - 1) && ((!vampiresPresents && vampires[x][y + 1] == 0)
                 || (!loupsPresents && loups[x][y + 1] == 0)
                 || (!humainsPresents && humains[x][y + 1] == 0))) {
             cases.add(new Case(x, y + 1));
@@ -44,7 +48,7 @@ public class GrilleUtils {
             cases.add(new Case(x - 1, y));
         }
         //case x+1,y
-        if ((x < lignes - 1) && ((!vampiresPresents && vampires[x + 1][y] == 0)
+        if ((x < colonnes - 1) && ((!vampiresPresents && vampires[x + 1][y] == 0)
                 || (!loupsPresents && loups[x + 1][y] == 0)
                 || (!humainsPresents && humains[x + 1][y] == 0))) {
             cases.add(new Case(x + 1, y));
@@ -78,7 +82,9 @@ public class GrilleUtils {
         for (int[] partition : partitions) {
             ArrayList<Mouvement> mouvements = new ArrayList<Mouvement>();
             for (int k = 0; k < casesAdjacentes.size(); k++) {
-                mouvements.add(new Mouvement(depart, casesAdjacentes.get(k), partition[k]));
+                if (partition[k]!=0) {
+                    mouvements.add(new Mouvement(depart, casesAdjacentes.get(k), partition[k]));
+                }
             }
             Deplacement deplacement = new Deplacement(mouvements, estVampires);
             list.add(deplacement);
@@ -87,14 +93,14 @@ public class GrilleUtils {
     
     public static int distanceVampires(int i, int j, int nbMonstresNecessaires, int[][] vampires, int lignes, int colonnes) {
         int[] dict = new int[lignes+colonnes];
-        for (int k=0; k<lignes; k++) {
-            for (int l=0; l<colonnes; l++) {
+        for (int k=0; k<colonnes; k++) {
+            for (int l=0; l<lignes; l++) {
                 dict[Utils.distance(i,j,k,l)] += vampires[k][l];
             }
         }
         int m=-1;
         int nbVampires = 0;
-        while (nbVampires<nbMonstresNecessaires && m<lignes+colonnes) {
+        while (nbVampires<nbMonstresNecessaires && m<lignes+colonnes-1) {
             m++;
             nbVampires += dict[m];
         }
@@ -103,14 +109,14 @@ public class GrilleUtils {
     
     public static int distanceLoups(int i, int j, int nbMonstresNecessaires, int[][] loups, int lignes, int colonnes) {
         int[] dict = new int[lignes+colonnes];
-        for (int k=0; k<lignes; k++) {
-            for (int l=0; l<colonnes; l++) {
+        for (int k=0; k<colonnes; k++) {
+            for (int l=0; l<lignes; l++) {
                 dict[Utils.distance(i,j,k,l)] += loups[k][l];
             }
         }
         int m=-1;
         int nbVampires = 0;
-        while (nbVampires<nbMonstresNecessaires && m<lignes+colonnes) {
+        while (nbVampires<nbMonstresNecessaires && m<(lignes+colonnes-1)) {
             m++;
             nbVampires += dict[m];
         }
