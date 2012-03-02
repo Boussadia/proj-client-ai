@@ -5,6 +5,8 @@ import com.mademoisellegeek.ia.data.Deplacement;
 import com.mademoisellegeek.ia.data.Tour;
 import java.util.LinkedList;
 
+//TODO CAMILLE multihread
+
 public abstract class Minimax implements Cloneable
 {
     public static final int UNLIMITED_SEARCH_DEPTH = -1;
@@ -60,7 +62,7 @@ public abstract class Minimax implements Cloneable
         }
         ((Deplacement)bestMove).printout();
         this.sendAction(bestMove);
-        doMove(bestMove);
+        //doMove(bestMove); //TODO VIRER PUISQUE QUE NOUVEAU SERVEUR LE FAIT
     }
 
     public final int evaluate(int maxSearchDepth, AlphaBeta alphaBeta)

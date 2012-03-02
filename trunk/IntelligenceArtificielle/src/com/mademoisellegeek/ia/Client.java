@@ -17,7 +17,6 @@ public class Client {
     private static InputStream in;
     private static OutputStream out;
     private Grille grille;
-    private AI ai;
     private boolean firstUpdate = true;
     private static String configFilePath;
     private static String teamName;
@@ -45,7 +44,6 @@ public class Client {
 
         try {
             socket = new Socket(host, port);
-            ai = new AI();
             in = socket.getInputStream();
             out = socket.getOutputStream();
             sendNme();
@@ -171,7 +169,8 @@ public class Client {
             System.out.println("UPDATE" + xCase + " " + yCase + " " + nbHumains + " " + nbVampires + "   " + nbLoupsGarous);
             grille.update(xCase, yCase, nbHumains, nbVampires, nbLoupsGarous);
         }
-        ai.jouer(grille);
+        grille.makePerfectMove(1);//TODO AHMED PROFONDEUR + CHRONO
+        
     }
     
     //Méthode qui reçoit la grille pour la première fois
