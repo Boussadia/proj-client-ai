@@ -36,6 +36,16 @@ public class ConfigTextParser {
                             port = Integer.parseInt(ligne);
                         else if(teamName == null){
                             teamName = ligne;
+                            if(teamName.length() == 0){
+                                teamName = "XXX";
+                            }else if(teamName.length() == 1){
+                                teamName = teamName + "XX";
+                            }else if(teamName.length() == 2){
+                                teamName = teamName + "X";
+                            }else if(teamName.length() > 3){
+                                teamName = ""+teamName.charAt(0) + teamName.charAt(1) + teamName.charAt(2);
+                            }
+                            
                             break;
                         }
                 }
