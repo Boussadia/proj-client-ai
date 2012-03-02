@@ -4,9 +4,9 @@
  */
 package com.mademoisellegeek.ia.utils;
 
+import com.mademoisellegeek.ia.data.Case;
 import com.mademoisellegeek.ia.data.Deplacement;
 import com.mademoisellegeek.ia.data.Mouvement;
-import com.mademoisellegeek.ia.data.Case;
 import com.mademoisellegeek.ia.data.Tour;
 import java.util.ArrayList;
 import java.util.LinkedList;
