@@ -1,5 +1,8 @@
 package com.mademoisellegeek.ia;
 
+import com.mademoisellegeek.ia.alphabeta.Minimax;
+import com.mademoisellegeek.ia.data.*;
+import com.mademoisellegeek.ia.utils.GrilleUtils;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
@@ -51,7 +54,7 @@ public class Grille extends Minimax implements Cloneable {
     public int getCurrentScore() {
         int score = 0;
         for (int i=0; i<colonnes; i++) {
-            for (int j=0; i<lignes; j++) {
+            for (int j=0; j<lignes; j++) {
                 if (humains[i][j]!=0) {
                     int nbMonstresNecessaires = humains[i][j];
                     int nbVampiresMovesNeeded = GrilleUtils.distanceVampires(i,j,nbMonstresNecessaires, vampires, lignes, colonnes);
@@ -96,7 +99,7 @@ public class Grille extends Minimax implements Cloneable {
             ArrayList<Mouvement> mouvements = ((Deplacement) tour).getMouvements();
             for (Mouvement mouvement : mouvements) {
                 int xDepart = mouvement.getXDepart();
-                int yDepart = mouvement.getXDepart();
+                int yDepart = mouvement.getYDepart();
                 int xArrivee = mouvement.getXArrivee();
                 int yArrivee = mouvement.getYArrivee();
                 if (tour.estTourDesVampires()) {
@@ -136,6 +139,14 @@ public class Grille extends Minimax implements Cloneable {
                         this.update(cible.getX(), cible.getY(), 0, 0, nombreAttaquants);
                     }
             }
+        }
+    }
+    @Override
+    public void sendAction(Tour tour) {
+        if (tour.getType() == TypeTour.DEPLACEMENT) {
+            Client.sendMov((Deplacement)tour);
+        } else {
+            Client.sendAtk(((Attaque)tour).getCible());
         }
     }
 

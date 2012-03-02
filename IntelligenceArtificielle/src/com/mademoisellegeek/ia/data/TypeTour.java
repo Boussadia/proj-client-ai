@@ -1,4 +1,4 @@
-package com.mademoisellegeek.ia;
+package com.mademoisellegeek.ia.data;
 
 public enum TypeTour {
      ATTAQUE,

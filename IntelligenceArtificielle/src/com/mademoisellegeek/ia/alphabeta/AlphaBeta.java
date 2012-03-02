@@ -1,4 +1,4 @@
-package com.mademoisellegeek.ia;
+package com.mademoisellegeek.ia.alphabeta;
 
 public class AlphaBeta
 {
