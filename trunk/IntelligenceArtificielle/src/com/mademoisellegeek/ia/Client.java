@@ -268,56 +268,29 @@ public class Client {
         //on récupére les informations du serveur
         System.out.println("Absoulte pat : " + (new File("test.java")).getAbsolutePath());
         
-        parser = new ConfigTextParser("config.txt");
-        host = parser.getHost();
-        port = parser.getPort();
-        teamName = parser.getName();
+        String pathToConfigFile;
         
         if (args.length != 2) {
             System.out.println("Pour lancer l'application, il faut donner en paramétres le chemin vers le fichier de congfig (-c).");
             System.out.println("Par exemple : -c \"Path/To/config.txt\"");
             return;
         } else {
-            //On cherche le port : -c
-            int tempPort = 0;
-            int indexPort = 0;
+            //On cherche le chemin du fichier de configuration : -c
             if (args[0].equals("-c")) {
-                indexPort = 0;
-            } else if (args[0].equals("-p")) {
-                indexPort = 2;
+                pathToConfigFile = args[1];
+                System.out.println("Chemin vers le fichier de configuration : "+pathToConfigFile);
+                
+                parser = new ConfigTextParser(pathToConfigFile);
+                host = parser.getHost();
+                port = parser.getPort();
+                teamName = parser.getName();
             } else {
-                System.out.println("Il faut renseigner un port!");
-                System.out.println("Exemple : -p 1000");
+                System.out.println("Pour lancer l'application, il faut donner en paramétres le chemin vers le fichier de congfig (-c).");
+                System.out.println("Par exemple : -c \"Path/To/config.txt\"");
                 return;
             }
-
-            try {
-                tempPort = Integer.parseInt(args[indexPort + 1]);
-            } catch (Exception e) {
-                System.out.println("Le port indiqué : " + args[indexPort + 1] + " n'est pas valide!");
-                return;
-            }
-            port = tempPort;
-            String tempHost = "";
-            int indexHost = 0;
-
-            if (args[0].equals("-h")) {
-                indexHost = 0;
-            } else if (args[0].equals("-h")) {
-                indexHost = 2;
-            } else {
-                System.out.println("Il faut renseigner un host!");
-                System.out.println("Exemple : -h 192.168.0.2");
-                return;
-            }
-
-            try {
-                tempHost = args[indexHost + 1];
-            } catch (Exception e) {
-                System.out.println("Le host indiqué : " + args[indexHost + 1] + " n'est pas valide!");
-                return;
-            }
-            host = tempHost;
+            
+            
         }
     }
 }
