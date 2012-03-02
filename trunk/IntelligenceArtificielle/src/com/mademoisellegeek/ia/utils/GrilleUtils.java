@@ -91,7 +91,7 @@ public class GrilleUtils {
         }
     }
     
-    public static int distanceVampires(int i, int j, int nbMonstresNecessaires, int[][] vampires, int lignes, int colonnes) {
+    public static int distanceVampires(int i, int j, double nbMonstresNecessaires, int[][] vampires, int lignes, int colonnes) {
         int[] dict = new int[lignes+colonnes];
         /* dictionnaire dont la taille correspond 
          * à la distance Manhattan maximale lignes+colonnes */
@@ -120,7 +120,7 @@ public class GrilleUtils {
         return m;/* distance Manhattan*/
     }
     
-    public static int distanceLoups(int i, int j, int nbMonstresNecessaires, int[][] loups, int lignes, int colonnes) {
+    public static int distanceLoups(int i, int j, double nbMonstresNecessaires, int[][] loups, int lignes, int colonnes) {
         int[] dict = new int[lignes+colonnes];
         for (int k=0; k<colonnes; k++) {
             for (int l=0; l<lignes; l++) {
