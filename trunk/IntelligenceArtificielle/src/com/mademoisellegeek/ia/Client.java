@@ -192,9 +192,9 @@ public class Client {
         trame[1] = 'M';
         trame[2] = 'E';
         trame[3] = (byte) 3;
-        trame[4] = 'B';
-        trame[5] = 'B';
-        trame[6] = 'G';
+        trame[4] = 'A';
+        trame[5] = 'H';
+        trame[6] = 'M';
         try {
             out.write(trame, 0, 7);
         } catch (Exception e) {
