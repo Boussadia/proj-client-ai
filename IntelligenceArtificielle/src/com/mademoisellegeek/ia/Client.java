@@ -4,6 +4,7 @@ import com.mademoisellegeek.ia.config.ConfigTextParser;
 import com.mademoisellegeek.ia.data.Deplacement;
 import com.mademoisellegeek.ia.data.Mouvement;
 import com.mademoisellegeek.ia.data.Case;
+import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
@@ -28,14 +29,6 @@ public class Client {
 
     public static void main(String[] args) throws Exception {
         
-        
-        //on récupére les informations du serveur
-        parser = new ConfigTextParser("/Users/ahmedboussadia/Desktop/config.txt");
-        host = parser.getHost();
-        port = parser.getPort();
-        
-        
-
         //TODO hote et port dans fichier config (et le nom de l'équipe TROIS CARACTERES)
         getHostAndPort(args);
 
@@ -272,16 +265,22 @@ public class Client {
     }
 
     private static void getHostAndPort(String[] args) {
-
-        if (args.length != 4) {
-            System.out.println("Pour lancer l'application, il faut donner en paramétres le port (-p) et l'adresse (-h) du serveur.");
-            System.out.println("Par exemple : -p 1000 -h 192.168.0.1");
+        //on récupére les informations du serveur
+        System.out.println("Absoulte pat : " + (new File("test.java")).getAbsolutePath());
+        
+        parser = new ConfigTextParser("config.txt");
+        host = parser.getHost();
+        port = parser.getPort();
+        
+        if (args.length != 2) {
+            System.out.println("Pour lancer l'application, il faut donner en paramétres le chemin vers le fichier de congfig (-c).");
+            System.out.println("Par exemple : -c \"Path/To/config.txt\"");
             return;
         } else {
-            //On cherche le port : -p
+            //On cherche le port : -c
             int tempPort = 0;
             int indexPort = 0;
-            if (args[0].equals("-p")) {
+            if (args[0].equals("-c")) {
                 indexPort = 0;
             } else if (args[0].equals("-p")) {
                 indexPort = 2;
