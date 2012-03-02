@@ -1,5 +1,6 @@
 package com.mademoisellegeek.ia;
 
+import com.mademoisellegeek.ia.config.ConfigTextParser;
 import com.mademoisellegeek.ia.data.Deplacement;
 import com.mademoisellegeek.ia.data.Mouvement;
 import com.mademoisellegeek.ia.data.Case;
@@ -17,8 +18,18 @@ public class Client {
     private Grille grille;
     private AI ai;
     private boolean firstUpdate = true;
+    
+    private static ConfigTextParser parser;
 
     public static void main(String[] args) throws Exception {
+        
+        
+        //on récupére les informations du serveur
+        parser = new ConfigTextParser("/Users/ahmedboussadia/Desktop/config.txt");
+        host = parser.getHost();
+        port = parser.getPort();
+        
+        
 
         //TODO hote et port dans fichier config (et le nom de l'équipe TROIS CARACTERES)
         getHostAndPort(args);
