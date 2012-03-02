@@ -16,6 +16,7 @@ public class Grille extends Minimax implements Cloneable {
     private int[][] loups;
     private boolean nousSommesVampires;
     private static int HUMAIN = 1000;
+    private static int MONSTRE = 1500;
 
     public Grille(int nbLignes, int nbColonnes) {
         this.lignes = nbLignes;
@@ -70,42 +71,95 @@ public class Grille extends Minimax implements Cloneable {
                             {
                                 score -= humains[i][j]*HUMAIN;
                             }
+                            else
+                            {
+                                score += humains[i][j]*HUMAIN;
+                            }
                             
                             break;
+                            
                         case 1: // Cas où nous sommes des vampires
                             System.out.println("Nous sommes des vampires ");
                             if (nbVampiresMovesNeeded<nbLoupsMovesNeeded) // Il nous faut moins de coups que nos ennemis
                             {
+                                /*
+                                 * Si on peut attraper les humains
+                                 * avant les autres, le score augmente.
+                                 */
                                 score += humains[i][j]*HUMAIN;
+                            }
+                            else
+                            {
+                                score -= humains[i][j]*HUMAIN;
                             }
                             
                             break;
                         default:
                             break;
                     }
-                    
-                    
-                    
+                }
+                
+                if (vampires[i][j]!=0) // S'il y a des vampires
+                {
+                        int seuil =3;
+                        int nbLoupsNecessaires = 1,5*vampires[i][j];// Règle pour gagner
+                        int nbLoupsMovesNeeded = GrilleUtils.distanceLoups(i,j,nbLoupsNecessaires, loups, lignes, colonnes);// Nombre de coups pour manger ces vampires
                         
-                    if (nbVampiresMovesNeeded<nbLoupsMovesNeeded) {
-                        if (nousSommesVampires) {
-                            score += humains[i][j]*HUMAIN;
-                        }
-                        else {
-                            score -= humains[i][j]*HUMAIN;
-                        }
-                    }
-                    else {
-                        if (nousSommesVampires) {
-                            score -= humains[i][j]*HUMAIN;
-                        }
-                        else {
-                            score += humains[i][j]*HUMAIN;
-                        }
+                        switch (nousSommesVampires) 
+                    {
+                        case 0: // Cas où nous sommes des loups garous
+                            System.out.println("Nous sommes des loups garous ");
+                            if (nbLoupsMovesNeeded<seuil) // Il nous faut moins de coups qu'un seuil
+                            {
+                                score += vampires[i][j]*MONSTRE;// Score augmente proportionnellement aux vampires qu'on va manger
+                            }
+                            break;
+                            
+                        case 1: // Cas où nous sommes des vampires
+                            System.out.println("Nous sommes des vampires ");
+                            if (nbLoupsMovesNeeded<seuil) // Il leur faut moins de coups qu'un seuil
+                            {
+                                score -= vampires[i][j]*MONSTRE;// Score diminue proportionnellement aux vampires qu'on va se faire manger
+                            }
+                            break;
+                        default:
+                            break;
                     }
                 }
+
+                if (loups[i][j]!=0) // S'il y a des loups
+                {
+                        int seuil =3;
+                        int nbVampiresNecessaires = 1,5*loups[i][j];// Règle pour gagner
+                        int nbVampiresMovesNeeded = GrilleUtils.distanceVampires(i,j,nbVampiresNecessaires, vampires, lignes, colonnes);// Nombre de coups pour manger ces vampires
+                        
+                        switch (nousSommesVampires) 
+                    {
+                        case 0: // Cas où nous sommes des loups garous
+                            System.out.println("Nous sommes des loups garous ");
+                            if (nbVampiresMovesNeeded<seuil) // Il leur faut moins de coups qu'un seuil
+                            {
+                                score -= loups[i][j]*MONSTRE;// Score diminue proportionnellement aux loups qu'on va se faire manger
+                            }
+                            break;
+                            
+                        case 1: // Cas où nous sommes des vampires
+                            System.out.println("Nous sommes des vampires ");
+                            if (nbVampiresMovesNeeded<seuil) // Il nous faut moins de coups qu'un seuil
+                            {
+                                score += loups[i][j]*MONSTRE;// Score augmente proportionnellement aux loups qu'on va manger
+                            }
+                
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                
+                
             }
         }
+                    
         //TODO JEAN protéger nos vampires, cette fonction est kamikaze
         return score;
     }
