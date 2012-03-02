@@ -23,7 +23,7 @@ public class Client {
     private static String configFilePath;
     
     
-    private String teamName;
+    private static String teamName;
     
     private static ConfigTextParser parser;
 
@@ -271,6 +271,7 @@ public class Client {
         parser = new ConfigTextParser("config.txt");
         host = parser.getHost();
         port = parser.getPort();
+        teamName = parser.getName();
         
         if (args.length != 2) {
             System.out.println("Pour lancer l'application, il faut donner en paramétres le chemin vers le fichier de congfig (-c).");
