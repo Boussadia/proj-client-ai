@@ -4,6 +4,8 @@ import com.mademoisellegeek.ia.alphabeta.AlphaBeta;
 import com.mademoisellegeek.ia.data.Deplacement;
 import com.mademoisellegeek.ia.data.Tour;
 import java.util.LinkedList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 //TODO CAMILLE multihread
 
@@ -15,6 +17,7 @@ public abstract class Minimax implements Cloneable
     public static final int MAX_HAS_WON            = Integer.MIN_VALUE;
     public static final int MAX_TURN               = 1;
     public static final int MIN_TURN               = -1;
+    public static final int COMPTEUR               = 9*1000; //temps maximum pour prendre une décision
 
     private int player = Minimax.MAX_TURN; // Must always be 1 or -1
 
@@ -23,30 +26,42 @@ public abstract class Minimax implements Cloneable
         return this.player;
     }
 
-    public final void makePerfectMove(int maxSearchDepth)
+    public final void makePerfectMove()
     {
+        
+        int maxSearchDepth = 1;
+        
         long systemTime = System.currentTimeMillis();
+        
         if(maxSearchDepth == 0)
         {
             return;
         }
+        
         LinkedList<Tour> moves = this.listAllLegalMoves();
+        
         if(moves.isEmpty())
         {
             return;
         }
+        
         else if(moves.size() == 1)
         {
-            doMove(moves.get(0));
+            this.sendAction(moves.get(0));
             return;
         }
-
+        
         int bestScore = this.player == Minimax.MAX_TURN ? Minimax.MINI_HAS_WON : Minimax.MAX_HAS_WON;
         Tour bestMove  = null;
-
-        long diff = 0;
+        
+        
         int i = 0;
         int nbMoves = moves.size();
+        
+       
+            
+        ///*
+        long diff = 0;
         while((diff < 9500) && (i<nbMoves))
         {
             Minimax tempBoard = (Minimax)this.clone();
@@ -63,6 +78,62 @@ public abstract class Minimax implements Cloneable
         ((Deplacement)bestMove).printout();
         this.sendAction(bestMove);
         //doMove(bestMove); //TODO VIRER PUISQUE QUE NOUVEAU SERVEUR LE FAIT
+        /**/
+        
+        
+        //NOUVELLE VERSION, IL FAUT VERIFIEr SI ÇA MARCHE!
+        
+        //*
+         MoveThread thread = new MoveThread(this, moves, maxSearchDepth);
+        try {
+            Thread.sleep(COMPTEUR-System.currentTimeMillis()+systemTime);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(Minimax.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        thread.interrupt();
+        /**/
+    }
+    
+    public class MoveThread extends Thread{
+        Minimax parent;
+        LinkedList<Tour> moves;
+        int maxSearchDepth;
+        public MoveThread(Minimax parent, LinkedList<Tour> moves, int maxSearchDepth){
+            this.parent = parent;
+            this.moves = moves;
+            this.maxSearchDepth = maxSearchDepth;
+        }
+            
+        public void run(){
+            int bestScore = parent.player == Minimax.MAX_TURN ? Minimax.MINI_HAS_WON : Minimax.MAX_HAS_WON;
+            Tour bestMove  = null;
+            int i = 0;
+            int nbMoves = this.moves.size();
+            while(i<nbMoves) {
+                // Traitement
+                    Minimax tempBoard = (Minimax)parent.clone();
+                    tempBoard.doMove(moves.get(i));
+                    int score = tempBoard.evaluate(maxSearchDepth == Minimax.UNLIMITED_SEARCH_DEPTH ? Minimax.UNLIMITED_SEARCH_DEPTH : maxSearchDepth - 1, new AlphaBeta());
+                    if(score * player < bestScore || bestMove == null)
+                    {
+                        bestScore = score * player;
+                        bestMove  = moves.get(i);
+                    }
+                    i++;
+
+                ((Deplacement)bestMove).printout();
+                parent.sendAction(bestMove);
+                
+                try {
+                    Thread.sleep(1); // Pause de 100 secondes
+                } catch (InterruptedException ex) {
+                    Thread.currentThread().interrupt(); // Très important de réinterrompre
+                    break; // Sortie de la boucle infinie
+                }
+            }
+        }
+        
+    
     }
 
     public final int evaluate(int maxSearchDepth, AlphaBeta alphaBeta)

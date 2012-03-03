@@ -169,7 +169,7 @@ public class Client {
             System.out.println("UPDATE" + xCase + " " + yCase + " " + nbHumains + " " + nbVampires + "   " + nbLoupsGarous);
             grille.update(xCase, yCase, nbHumains, nbVampires, nbLoupsGarous);
         }
-        grille.makePerfectMove(1);//TODO AHMED PROFONDEUR + CHRONO
+        grille.makePerfectMove();//TODO AHMED PROFONDEUR + CHRONO
         
     }
     
@@ -258,7 +258,7 @@ public class Client {
         out.close();
         socket.close();
     }
-
+    
     private static void getConfigValues(String[] args) {
         //on récupére les informations du serveur
         System.out.println("Absoulte pat : " + (new File("test.java")).getAbsolutePath());
