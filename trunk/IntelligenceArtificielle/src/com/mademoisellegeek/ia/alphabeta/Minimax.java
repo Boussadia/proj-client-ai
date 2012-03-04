@@ -1,6 +1,5 @@
 package com.mademoisellegeek.ia.alphabeta;
 
-import com.mademoisellegeek.ia.alphabeta.AlphaBeta;
 import com.mademoisellegeek.ia.data.Deplacement;
 import com.mademoisellegeek.ia.data.Tour;
 import java.util.LinkedList;
@@ -60,7 +59,7 @@ public abstract class Minimax implements Cloneable
         
        
             
-        ///*
+        /*
         long diff = 0;
         while((diff < 9500) && (i<nbMoves))
         {
@@ -81,10 +80,10 @@ public abstract class Minimax implements Cloneable
         /**/
         
         
-        //NOUVELLE VERSION, IL FAUT VERIFIEr SI ÇA MARCHE!
+        //NOUVELLE VERSION, IL FAUT VERIFIER SI ÇA MARCHE!
         
         //*
-         MoveThread thread = new MoveThread(this, moves, maxSearchDepth);
+        MoveThread thread = new MoveThread(this, moves, maxSearchDepth);
         try {
             Thread.sleep(COMPTEUR-System.currentTimeMillis()+systemTime);
         } catch (InterruptedException ex) {
@@ -98,12 +97,14 @@ public abstract class Minimax implements Cloneable
         Minimax parent;
         LinkedList<Tour> moves;
         int maxSearchDepth;
+        
         public MoveThread(Minimax parent, LinkedList<Tour> moves, int maxSearchDepth){
             this.parent = parent;
             this.moves = moves;
             this.maxSearchDepth = maxSearchDepth;
         }
             
+        @Override
         public void run(){
             int bestScore = parent.player == Minimax.MAX_TURN ? Minimax.MINI_HAS_WON : Minimax.MAX_HAS_WON;
             Tour bestMove  = null;
@@ -125,7 +126,7 @@ public abstract class Minimax implements Cloneable
                 parent.sendAction(bestMove);
                 
                 try {
-                    Thread.sleep(1); // Pause de 100 secondes
+                    Thread.sleep(1); // Pause
                 } catch (InterruptedException ex) {
                     Thread.currentThread().interrupt(); // Très important de réinterrompre
                     break; // Sortie de la boucle infinie
