@@ -22,7 +22,7 @@ public class Utils {
             }
             result.add(temp);
         }
-        if (beginning != null && beginning.length == 4) {
+        if (beginning != null && beginning.length == nbCases) {
             return result;
         }
         if (sum != 0) {
@@ -52,7 +52,6 @@ public class Utils {
     }
 
     public static Integer distance(int i, int j, int k, int l) {
-        return Math.abs(i - k) + Math.abs(j - l);
-        //TODO CAMILLE distance euclidienne possible
+        return Math.max(Math.abs(i - k),Math.abs(j - l));
     }
 }

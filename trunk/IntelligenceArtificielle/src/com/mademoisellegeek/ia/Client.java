@@ -4,22 +4,19 @@ import com.mademoisellegeek.ia.config.ConfigTextParser;
 import com.mademoisellegeek.ia.data.Case;
 import com.mademoisellegeek.ia.data.Deplacement;
 import com.mademoisellegeek.ia.data.Mouvement;
-import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 
 public class Client {
 
-    private static String host = "169.254.238.239";
-    private static int port = 5555;
+    private static String host;
+    private static int port;
     private Socket socket;
     private static InputStream in;
     private static OutputStream out;
     private Grille grille;
-    private boolean firstUpdate = true;
-    private static String configFilePath;
-    private static String teamName;
+    private static String nomEquipe;
     private static ConfigTextParser parser;
 
     public static void main(String[] args) throws Exception {
@@ -27,14 +24,12 @@ public class Client {
         getConfigValues(args);
 
         Client client = new Client();
-        // On boucle à l'infini jusqu'à la fin de la partie 
         while (true) {
             boolean isByeTrame = client.receiveTrame();
             if (isByeTrame) {
                 break;
             }
         }
-        // Fermer le socket client
         client.closeAll();
     }
 
@@ -104,8 +99,7 @@ public class Client {
                 throw new Exception("Erreur de lecture des données de la trame MAP");
             }
             receiveMap(N, trame);
-        }
-            else if (typeTrame.equalsIgnoreCase("UPD")) {
+        } else if (typeTrame.equalsIgnoreCase("UPD")) {
             trame = new byte[1];
             nbBytesLus = in.read(trame, 0, 1);
             if (nbBytesLus != 1) {
@@ -156,10 +150,6 @@ public class Client {
 
     //Méthode qui indique les modifications à apporter à la grille
     void receiveUpd(int nbUpdates, byte[] bytes) {
-        if (firstUpdate) {
-            grille.setNousSommesVampires();
-            firstUpdate = false;
-        }
         for (int i = 0; i < nbUpdates; i++) {
             int xCase = (int) bytes[5 * i] & 0xff;
             int yCase = (int) bytes[5 * i + 1] & 0xff;
@@ -170,9 +160,9 @@ public class Client {
             grille.update(xCase, yCase, nbHumains, nbVampires, nbLoupsGarous);
         }
         grille.makePerfectMove();//TODO AHMED PROFONDEUR + CHRONO
-        
+
     }
-    
+
     //Méthode qui reçoit la grille pour la première fois
     void receiveMap(int nbUpdates, byte[] bytes) {
         for (int i = 0; i < nbUpdates; i++) {
@@ -184,6 +174,7 @@ public class Client {
             System.out.println("MAP" + xCase + " " + yCase + " " + nbHumains + " " + nbVampires + "   " + nbLoupsGarous);
             grille.update(xCase, yCase, nbHumains, nbVampires, nbLoupsGarous);
         }
+        grille.setNousSommesVampires();
     }
 
     //Méthode qui indique que la partie est terminée
@@ -191,18 +182,20 @@ public class Client {
         grille.vider();
     }
 
-    //Méthode qui indique le nom du joueur
+    /**
+     * NME: Envoyer le nom de l'équipe
+     * (assume que le nom de l'équipe a déjà été fixé)
+     */
     static void sendNme() {
-        System.out.println("SENT NME : "+teamName.charAt(0)+teamName.charAt(1)+teamName.charAt(2));
-        
+        System.out.println("SENT NME : " + nomEquipe.charAt(0) + nomEquipe.charAt(1) + nomEquipe.charAt(2));
         byte[] trame = new byte[7];
         trame[0] = 'N';
         trame[1] = 'M';
         trame[2] = 'E';
         trame[3] = (byte) 3;
-        trame[4] = (byte) teamName.charAt(0);
-        trame[5] = (byte) teamName.charAt(1);
-        trame[6] = (byte) teamName.charAt(2);
+        trame[4] = (byte) nomEquipe.charAt(0);
+        trame[5] = (byte) nomEquipe.charAt(1);
+        trame[6] = (byte) nomEquipe.charAt(2);
         try {
             out.write(trame, 0, 7);
         } catch (Exception e) {
@@ -210,33 +203,41 @@ public class Client {
         }
         System.out.println("La trame NME est envoyée au serveur.");
     }
-    
-    //Méthode qui déplace des individus d'une case à l'autre
+
+    /**
+     * MOV: Effectuer un déplacement de monstres (1 à 3 mouvements)
+     *
+     * @param Deplacement deplacement Déplacement à effectuer
+     */
     static void sendMov(Deplacement deplacement) {
         int nbMouvements = deplacement.getMouvements().size();
-        byte[] trame = new byte[4+5*nbMouvements];
+        byte[] trame = new byte[4 + 5 * nbMouvements];
         trame[0] = 'M';
         trame[1] = 'O';
         trame[2] = 'V';
         trame[3] = (byte) nbMouvements;
         int index = 4;
-        for(Mouvement mouvement: deplacement.getMouvements()) {
-            trame[index] = (byte)mouvement.getXDepart();
-            trame[index+1] = (byte)mouvement.getYDepart();
-            trame[index+2] = (byte)mouvement.getNbIndividus();
-            trame[index+3] = (byte)mouvement.getXArrivee();
-            trame[index+4] = (byte)mouvement.getYArrivee();
-            index+=5;
+        for (Mouvement mouvement : deplacement.getMouvements()) {
+            trame[index] = (byte) mouvement.getXDepart();
+            trame[index + 1] = (byte) mouvement.getYDepart();
+            trame[index + 2] = (byte) mouvement.getNbIndividus();
+            trame[index + 3] = (byte) mouvement.getXArrivee();
+            trame[index + 4] = (byte) mouvement.getYArrivee();
+            index += 5;
         }
         try {
-            out.write(trame, 0, 4+5*nbMouvements);
+            out.write(trame, 0, 4 + 5 * nbMouvements);
         } catch (Exception e) {
             System.out.println("Erreur d'écriture de la trame MOV");
         }
         System.out.println("La trame MOV est envoyée au serveur");
     }
 
-    //Méthode qui attaque une case
+    /**
+     * ATK: Attaquer une case
+     *
+     * @param Case cible Case cible de l'attaque
+     */
     static void sendAtk(Case cible) {
         byte[] trame = new byte[5];
         trame[0] = 'A';
@@ -252,19 +253,26 @@ public class Client {
         System.out.println("La trame ATK est envoyée au serveur");
     }
 
-    // Méthode qui permet de fermer le socket client
+    /**
+     * Fermer le socket
+     */
     void closeAll() throws Exception {
         in.close();
         out.close();
         socket.close();
     }
-    
+
+    /**
+     * Obtenir les valeurs de configuration; si aucun argument n'est donné,
+     * considérer les valeurs dans le fichier "config.txt"; si des arguments de
+     * forme -c text.txt sont donnés, les valeurs dans le fichier "text.txt"
+     * sont considérées
+     * @param String[] args Arguments ligne de commande
+     */
     private static void getConfigValues(String[] args) {
-        //on récupére les informations du serveur
-        System.out.println("Absoulte pat : " + (new File("test.java")).getAbsolutePath());
-        
+
         String pathToConfigFile;
-        
+
         if (args.length != 2) {
             System.out.println("Pour lancer l'application, il faut donner en paramétres le chemin vers le fichier de congfig (-c).");
             System.out.println("Par exemple : -c \"Path/To/config.txt\"");
@@ -273,12 +281,12 @@ public class Client {
             //On cherche le chemin du fichier de configuration : -c
             if (args[0].equals("-c")) {
                 pathToConfigFile = args[1];
-                System.out.println("Chemin vers le fichier de configuration : "+pathToConfigFile);
-                
+                System.out.println("Chemin vers le fichier de configuration : " + pathToConfigFile);
+
                 parser = new ConfigTextParser(pathToConfigFile);
                 host = parser.getHost();
                 port = parser.getPort();
-                teamName = parser.getName().toUpperCase();
+                nomEquipe = parser.getName().toUpperCase();
             } else {
                 System.out.println("Pour lancer l'application, il faut donner en paramétres le chemin vers le fichier de congfig (-c).");
                 System.out.println("Par exemple : -c \"Path/To/config.txt\"");
