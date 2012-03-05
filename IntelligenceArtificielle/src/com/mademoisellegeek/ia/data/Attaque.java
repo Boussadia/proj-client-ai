@@ -1,11 +1,5 @@
 package com.mademoisellegeek.ia.data;
 
-import com.mademoisellegeek.ia.data.Tour;
-
-/**
- *
- * @author cbaldock
- */
 public class Attaque extends Tour {
 
     private Case cible;
